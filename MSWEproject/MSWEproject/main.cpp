@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 int main(void) {
-	printf("Hello");
+	printf("Hello team");
 	getchar();
 
 	return 0;

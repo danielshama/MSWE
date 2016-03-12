@@ -11,7 +11,7 @@ int main(VOID)
 {
 	DWORD cNumRead, fdwMode, i;
 	INPUT_RECORD irInBuf[128];
-	TextBox textBox = TextBox(7, 7, 20, 128);
+	TextBox textBox = TextBox(7, 7, 20);
 	int counter = 0;
 
 	// Get the standard input handle. 
@@ -53,10 +53,7 @@ int main(VOID)
 
 VOID ErrorExit(LPSTR lpszMessage) {
 	fprintf(stderr, "%s\n", lpszMessage);
-
 	// Restore input mode on exit.
-
 	SetConsoleMode(hStdin, fdwSaveOldMode);
-
 	ExitProcess(0);
 }

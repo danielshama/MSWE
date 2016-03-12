@@ -1,33 +1,36 @@
 #include "TextBox.h"
 
 
-TextBox::TextBox(int x, int y, int width, int size) {
+TextBox::TextBox(int x, int y, int width) {
 
-	c = { x, y };
-	cruserPosition = 0;
-	maxSize = size;
-	amount = maxSize;
-
+	handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	c = { (short)x, (short)y };
+	curserPosition = 0;
+	textBoxBuf = new char[width];
+	for (int i = 0; i < width; i++) {
+		textBoxBuf[i] = ' ';
+	}
+	maxSize = width;
+	isClicked = true;
 	createTextBox(width);
 }
 
 void TextBox::createTextBox(int width) {
 
-	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleCursorPosition(h, c);
-
+	SetConsoleCursorPosition(handle, c);
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
-	GetConsoleScreenBufferInfo(h, &cbi);
+	GetConsoleScreenBufferInfo(handle, &cbi);
 	DWORD wAttr2 = cbi.wAttributes | BACKGROUND_BLUE | BACKGROUND_GREEN;
-	SetConsoleTextAttribute(h, wAttr2);
-
+	SetConsoleTextAttribute(handle, wAttr2);
 	for (int i = 0; i < width; i++) {
-		printf(" ");
+		printf("%c", textBoxBuf[i]);
 	}
 }
 
 void TextBox::handleInput(INPUT_RECORD iRecord) {
 
+	handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	changeCurserPosition(curserPosition);
 	switch (iRecord.EventType)
 	{
 	case KEY_EVENT: // keyboard input 
@@ -35,80 +38,82 @@ void TextBox::handleInput(INPUT_RECORD iRecord) {
 		break;
 
 	case MOUSE_EVENT: // mouse input 
-		mouseEventProc(iRecord.Event.MouseEvent);
+		//mouseEventProc(iRecord.Event.MouseEvent);
 		break;
 
 	default:
-		errorInput();
+		//errorInput();
 		break;
 	}
 }
 
-void TextBox::keyEventProc(KEY_EVENT_RECORD ker)
-{
-}
+void TextBox::keyEventProc(KEY_EVENT_RECORD ker) {
 
-void TextBox::mouseEventProc(MOUSE_EVENT_RECORD mer){
-#ifndef MOUSE_HWHEELED
-#define MOUSE_HWHEELED 0x0008
-#endif
-	printf("Mouse event: ");
+	if (curserPosition >= 0  && curserPosition < maxSize) {
+		if (ker.bKeyDown) {
+			//RIGHT key pressed
+			if (ker.wVirtualKeyCode == VK_RIGHT) {
+				moveRight();
+			}
+			//LEFT key pressed
+			else if (ker.wVirtualKeyCode == VK_LEFT) {
+				moveLeft();
+			}
+			//BACKSPACE key pressed
+			else if (ker.wVirtualKeyCode == VK_BACK) {
+				deleteCharecter();
+			}
+			//Right mouse clicked
+			else if (ker.wVirtualKeyCode == VK_RBUTTON) {
+				
+			} 
+			//Write the charecter to the console 
+			else addCharecter(ker.uChar.AsciiChar);
+		}
 
-	switch (mer.dwEventFlags)
-	{
-	case 0:
-
-		if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
-		{
-			printf("left button press \n");
-		}
-		else if (mer.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
-		{
-			printf("right button press \n");
-		}
-		else
-		{
-			printf("button press\n");
-		}
-		break;
-	case DOUBLE_CLICK:
-		printf("double click\n");
-		break;
-	case MOUSE_HWHEELED:
-		printf("horizontal mouse wheel\n");
-		break;
-	case MOUSE_MOVED:
-		printf("mouse moved\n");
-		break;
-	case MOUSE_WHEELED:
-		printf("vertical mouse wheel\n");
-		break;
-	default:
-		printf("unknown\n");
-		break;
+	} else {
+		curserPosition = (curserPosition < 0) ? 0 : maxSize-1;
 	}
 }
 
-boolean TextBox::textBoxIsClicked(COORD c)
-{
 
-	return true;
+void TextBox::textBoxIsClicked(boolean clickInside) {
+	isClicked = (clickInside) ? true : false;
+	//if isClicked true ---> remove the curser from the textbox 
+	//if isClicked false ---> add the curser to the curserPosition
 }
 
-void TextBox::moveRight()
-{
+void TextBox::moveRight() {
+	//set the curser one place right
+	if (curserPosition >= maxSize-1) return;
+	curserPosition++;
+	changeCurserPosition(curserPosition);
 }
 
-void TextBox::moveLeft()
-{
+void TextBox::moveLeft() {
+	//set the curser one place left
+	if (curserPosition <= 0) return;
+	curserPosition--;
+	changeCurserPosition(curserPosition);
 }
 
-void TextBox::deleteCharecter()
-{
+void TextBox::deleteCharecter(){
+	//set space where the curser stand 
+	printf(" ");
+	textBoxBuf[curserPosition] = ' ';
+	moveLeft();
 }
 
-void TextBox::addCharecter(char c)
-{
+void TextBox::addCharecter(char ch) {
+	//set c (argument) where the curser stand 
+	printf("%c", ch);
+	textBoxBuf[curserPosition] = ch;
+	moveRight();
+}
+
+void TextBox::changeCurserPosition(int position){
+	COORD newCoord = { c.X + position, c.Y };
+	SetConsoleCursorPosition(handle, newCoord);
 }
 
 void TextBox::errorInput() {
@@ -116,6 +121,6 @@ void TextBox::errorInput() {
 }
 
 TextBox::~TextBox() {
-
+	free(textBoxBuf);
 }
 

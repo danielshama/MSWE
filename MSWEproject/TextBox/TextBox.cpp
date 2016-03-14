@@ -20,7 +20,7 @@ void TextBox::createTextBox(int width) {
 	SetConsoleCursorPosition(handle, c);
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	GetConsoleScreenBufferInfo(handle, &cbi);
-	DWORD wAttr2 = cbi.wAttributes | BACKGROUND_BLUE | BACKGROUND_GREEN;
+	DWORD wAttr2 = cbi.wAttributes | BACKGROUND_BLUE;
 	SetConsoleTextAttribute(handle, wAttr2);
 	for (int i = 0; i < width; i++) {
 		printf("%c", textBoxBuf[i]);
@@ -29,6 +29,7 @@ void TextBox::createTextBox(int width) {
 
 void TextBox::handleInput(INPUT_RECORD iRecord) {
 
+	if (!isClicked) return;
 	handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	changeCurserPosition(curserPosition);
 	switch (iRecord.EventType)
@@ -38,7 +39,7 @@ void TextBox::handleInput(INPUT_RECORD iRecord) {
 		break;
 
 	case MOUSE_EVENT: // mouse input 
-		//mouseEventProc(iRecord.Event.MouseEvent);
+		MouseEventProc(iRecord.Event.MouseEvent);
 		break;
 
 	default:
@@ -48,9 +49,9 @@ void TextBox::handleInput(INPUT_RECORD iRecord) {
 }
 
 void TextBox::keyEventProc(KEY_EVENT_RECORD ker) {
-
 	if (curserPosition >= 0  && curserPosition < maxSize) {
 		if (ker.bKeyDown) {
+
 			//RIGHT key pressed
 			if (ker.wVirtualKeyCode == VK_RIGHT) {
 				moveRight();
@@ -63,10 +64,14 @@ void TextBox::keyEventProc(KEY_EVENT_RECORD ker) {
 			else if (ker.wVirtualKeyCode == VK_BACK) {
 				deleteCharecter();
 			}
-			//Right mouse clicked
-			else if (ker.wVirtualKeyCode == VK_RBUTTON) {
-				
-			} 
+			//TAB key pressed
+			else if (ker.wVirtualKeyCode == VK_TAB) {
+				if (curserPosition < maxSize - 3) {
+					moveRight();
+					moveRight();
+					moveRight();
+				}
+			}
 			//Write the charecter to the console 
 			else addCharecter(ker.uChar.AsciiChar);
 		}
@@ -76,11 +81,28 @@ void TextBox::keyEventProc(KEY_EVENT_RECORD ker) {
 	}
 }
 
+void TextBox::MouseEventProc(MOUSE_EVENT_RECORD mer) {
+	#ifndef MOUSE_HWHEELED
+	#define MOUSE_HWHEELED 0x0008
+	#endif
+	switch (mer.dwEventFlags) {
+		
+		case 0:
+			//Right button press
+			if (mer.dwButtonState == RIGHTMOST_BUTTON_PRESSED) {
+				checkClickedPosition(mer.dwMousePosition);
+			}
+			break;
+	}
+}
 
-void TextBox::textBoxIsClicked(boolean clickInside) {
-	isClicked = (clickInside) ? true : false;
-	//if isClicked true ---> remove the curser from the textbox 
-	//if isClicked false ---> add the curser to the curserPosition
+void TextBox::checkClickedPosition(COORD dwMousePosition) {
+	if (dwMousePosition.Y == c.Y && ( (dwMousePosition.X >= c.X) && (dwMousePosition.X < c.X + maxSize) )) {
+		isClicked = true;
+	}
+	else {
+		isClicked = false;
+	}
 }
 
 void TextBox::moveRight() {
@@ -117,8 +139,8 @@ void TextBox::changeCurserPosition(int position){
 }
 
 void TextBox::errorInput() {
-	printf("Unknown event type");
 }
+
 
 TextBox::~TextBox() {
 	free(textBoxBuf);

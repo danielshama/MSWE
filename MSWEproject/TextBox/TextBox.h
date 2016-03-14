@@ -22,6 +22,7 @@ public:
 	void handleInput(INPUT_RECORD iRecord);
 
 	void keyEventProc(KEY_EVENT_RECORD ker);
+	void MouseEventProc(MOUSE_EVENT_RECORD mer);
 
 	void moveRight();
 	void moveLeft();
@@ -29,7 +30,7 @@ public:
 	void addCharecter(char c);
 	void changeCurserPosition(int position);
 	void errorInput();
-	void textBoxIsClicked(boolean clickInside);
+	void checkClickedPosition(COORD dwMousePosition);
 
 };
 

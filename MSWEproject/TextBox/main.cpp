@@ -11,7 +11,7 @@ int main(VOID)
 {
 	DWORD cNumRead, fdwMode, i;
 	INPUT_RECORD irInBuf[128];
-	TextBox textBox = TextBox(7, 7, 20);
+	TextBox textBox = TextBox(10, 15, 40);
 	int counter = 0;
 
 	// Get the standard input handle. 
@@ -41,6 +41,7 @@ int main(VOID)
 
 		// Dispatch the events to the appropriate handler. 
 		for (i = 0; i < cNumRead; i++) {
+			//Send the input record to the textbox handler
 			textBox.handleInput(irInBuf[i]);
 		}
 	}

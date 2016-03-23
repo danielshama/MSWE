@@ -5,7 +5,7 @@
 
 using namespace std;
 
-int main(void) {
+int main(VOID) {
 
 	//non touchable cant react tp mouse and keyboard.
 	//light green on a black background

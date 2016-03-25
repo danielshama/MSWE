@@ -134,7 +134,7 @@ void TextBox::addCharecter(char ch) {
 }
 
 void TextBox::changeCurserPosition(int position){
-	COORD newCoord = { c.X + position, c.Y };
+	COORD newCoord = { (short) c.X + (short) position, c.Y };
 	SetConsoleCursorPosition(handle, newCoord);
 }
 

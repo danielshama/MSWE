@@ -1,31 +1,28 @@
 #include "Label.h"
 #include <iostream>
 
-Label::Label()
-{
+Label::Label(int x, int y, string str) {
+	c = { (short)x, (short)y };
+	labelStr = str;
+	handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	createLabel();
 }
 
+void Label::createLabel() {
 
-Label::~Label()
-{
+	//change curser position
+	SetConsoleCursorPosition(handle, c);
 
-}
- void Label::createLabel (int locationX, int locationY, string str) {
+	//foreground color
+	DWORD wAttr = FOREGROUND_GREEN | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+	SetConsoleTextAttribute(handle, wAttr);
 
-	 COORD c = { locationX, locationY };
-	 HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+	//cursor size
+	CONSOLE_CURSOR_INFO cci = { 100, FALSE };
+	SetConsoleCursorInfo(handle, &cci);
 
-	 SetConsoleCursorPosition(h, c);
-
-	 //set cursor size and visibility example
-
-
-	 //set foreground color
-
-	 DWORD wAttr = FOREGROUND_GREEN | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
-	 SetConsoleTextAttribute(h, wAttr);
-
-	 cout << str;
-	 cin >> str;
-
+	//print the label
+	cout << labelStr;
  }
+
+Label::~Label(){}

@@ -11,9 +11,8 @@ private:
 	HANDLE handle;
 	COORD c;
 	char* choosen;
-	int listSize;
-	int width;
 	char** list;
+	int listSize, width;
 	bool isOpen;
 
 	//the initial style

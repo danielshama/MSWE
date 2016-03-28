@@ -3,11 +3,12 @@
 
 TextBox::TextBox(int x, int y, int width) {
 
+	int i;
 	handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	c = { (short)x, (short)y };
 	curserPosition = 0;
 	textBoxBuf = new char[width];
-	for (int i = 0; i < width; i++) {
+	for (i = 0; i < width; i++) {
 		textBoxBuf[i] = ' ';
 	}
 	maxSize = width;
@@ -17,12 +18,13 @@ TextBox::TextBox(int x, int y, int width) {
 
 void TextBox::createTextBox(int width) {
 
+	int i;
 	SetConsoleCursorPosition(handle, c);
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	GetConsoleScreenBufferInfo(handle, &cbi);
 	DWORD wAttr = BACKGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
 	SetConsoleTextAttribute(handle, wAttr);
-	for (int i = 0; i < width; i++) {
+	for (i = 0; i < width; i++) {
 		printf("%c", textBoxBuf[i]);
 	}
 }
@@ -43,7 +45,6 @@ void TextBox::handleInput(INPUT_RECORD iRecord) {
 		break;
 
 	default:
-		//errorInput();
 		break;
 	}
 }
@@ -100,15 +101,16 @@ void TextBox::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 }
 
 void TextBox::checkClickedPosition(COORD dwMousePosition) {
+	CONSOLE_CURSOR_INFO cci;
 	if (dwMousePosition.Y == c.Y && ((dwMousePosition.X >= c.X) && (dwMousePosition.X < c.X + maxSize))) {
 		isClicked = true;
-		CONSOLE_CURSOR_INFO cci = { 10, TRUE };
+		cci = { 10, TRUE };
 		SetConsoleCursorInfo(handle, &cci);
 		curserPosition = dwMousePosition.X - c.X;
-		changeCurserPosition(dwMousePosition.X);
+		changeCurserPosition(curserPosition);
 	}
 	else {
-		CONSOLE_CURSOR_INFO cci = { 100, FALSE };
+		cci = { 100, FALSE };
 		SetConsoleCursorInfo(handle, &cci);
 		isClicked = false;
 	}
@@ -137,9 +139,9 @@ void TextBox::deleteCharecter(){
 }
 
 void TextBox::shiftLeft() {
-	int curserPtr = curserPosition;
+	int curserPtr = curserPosition, i;
 	moveRight();
-	for (int i = curserPtr + 1; i < maxSize-1; i++) {
+	for (i = curserPtr + 1; i < maxSize-1; i++) {
 		textBoxBuf[i] = textBoxBuf[i + 1];
 		addCharecter(textBoxBuf[i]);
 	}
@@ -159,9 +161,6 @@ void TextBox::addCharecter(char ch) {
 void TextBox::changeCurserPosition(int position){
 	COORD newCoord = { c.X + position, c.Y };
 	SetConsoleCursorPosition(handle, newCoord);
-}
-
-void TextBox::errorInput() {
 }
 
 

@@ -2,7 +2,18 @@
 
 
 
-RadioBox::RadioBox(HANDLE *in, HANDLE *out, int size, string options[])
+RadioBox::RadioBox(string option, DWORD &noBackground, DWORD &backgroundOn) {
+	this -> option = option;
+
+	this->noBackground = noBackground;
+	this->backgroundOn = backgroundOn;
+
+	makeRadioButton();
+
+}
+
+/*
+RadioBox::RadioBox(int size, string options[])
 {
 	this->size = size;
 
@@ -10,66 +21,122 @@ RadioBox::RadioBox(HANDLE *in, HANDLE *out, int size, string options[])
 		cout << "There is no content to the RadioBox" << endl;
 		exit(1);
 	}
-	this->in = in;
-	this->out = out;
+
+
 
 	cout << endl; //going down one line (just in case)
 
 	places = new doubleCoord[size];
 
-	radioPoints = new POINT[size];
+	radioPoints = new COORD[size];
 
 	makeBoxes(options);
 
-
-
-
-
-	/*
-	outHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-	inHandle = GetStdHandle(STD_INPUT_HANDLE);
-
-	COORD *coord = new COORD();
-	coord->X = 0;
-	coord->Y = 4;
-
-	SetConsoleCursorPosition(outHandle, *coord);
-	cout << "( )" << " The first radio option" << endl;
-	cout << "( )" << " The second radio option" << endl;
-	cout << "( )" << " The third radio option" << endl;
-	*/
+	noVisibleCursor = { 100, true };
+	SetConsoleCursorInfo(out, &noVisibleCursor);
+	SetConsoleCursorPosition(out, radioPoints[0]);
 }
+*/
 
+/*
 void RadioBox::makeBoxes(string options[]) {
 	for (int i = 0; i < size; i++) {
 		makeRadioButton(i, options[i]);
 	}
 }
+*/
 
+void RadioBox::makeRadioButton() {
+	cout << "[";
+	GetConsoleScreenBufferInfo(out, &csbiInfo);
+	checkPoint = csbiInfo.dwCursorPosition;
+
+	cout << " ] - ";
+	GetConsoleScreenBufferInfo(out, &csbiInfo);
+	optionCoords.start = csbiInfo.dwCursorPosition;
+
+	cout << option;
+	GetConsoleScreenBufferInfo(out, &csbiInfo);
+	optionCoords.end = csbiInfo.dwCursorPosition;
+
+	cout << endl;
+
+}
+
+/*
 void RadioBox::makeRadioButton(int num, string option) {
-	POINT *tempPoint = new POINT();
 	cout << "(";
-	GetCursorPos(tempPoint);
-	radioPoints[num].x = tempPoint->x;
-	radioPoints[num].y = tempPoint->y;
-	cout << " ) - ";
+	GetConsoleScreenBufferInfo(out, &csbiInfo);
+	radioPoints[num].X = csbiInfo.dwCursorPosition.X;
+	radioPoints[num].Y = csbiInfo.dwCursorPosition.Y;
 
-	GetCursorPos(tempPoint);
+	//noVisibleCursor = { 100, FALSE };
+	//SetConsoleCursorInfo(out, &noVisibleCursor);
+	cout << " ";
+
+	//visibleCursor = { 50, TRUE };
+	//SetConsoleCursorInfo(out, &visibleCursor);
+	cout << ") - ";
+
+	GetConsoleScreenBufferInfo(out, &csbiInfo);
 	//I need the first coordinate of the option's sentence
-	places[num].start.X = (int)tempPoint->x;
-	places[num].start.Y = (int)tempPoint->y;
+	places[num].start.X = csbiInfo.dwCursorPosition.X;
+	places[num].start.Y = csbiInfo.dwCursorPosition.Y;
 
 	//Need to set the marking background - ask Kasus!!!
 
 	//Putting the string (describes the option)
 	cout << option;
 
-	GetCursorPos(tempPoint);//saving the last coordinate of the radio option
-	places[num].end.X = (int)tempPoint->x;
-	places[num].end.Y = (int)tempPoint->y;
+	GetConsoleScreenBufferInfo(out, &csbiInfo);//saving the last coordinate of the radio option
+	places[num].end.X = csbiInfo.dwCursorPosition.X;
+	places[num].end.Y = csbiInfo.dwCursorPosition.Y;
 	cout << endl;
+}
+*/
 
+BOOL RadioBox::isChecked() {
+	return checked;
+}
 
+BOOL RadioBox::isHovered() {
+	return hovered;
+}
+
+void RadioBox::setOnBackground() {
+	DWORD background;
+	if (!FillConsoleOutputAttribute(out, backgroundOn, option.size(), optionCoords.start, &background)) {
+		cout << "failed to change the background" << endl;
+		exit(1);
+	}
+	hovered = TRUE;
+}
+
+void RadioBox::setOffBackground() {
+	DWORD background;
+	if (!FillConsoleOutputAttribute(out, noBackground, option.size(), optionCoords.start, &background)) {
+		cout << "failed to change the background" << endl;
+		exit(1);
+	}
+	hovered = FALSE;
+}
+
+void RadioBox::markAsChecked() {
+	SetConsoleCursorPosition(out, checkPoint);
+	cout << "X";
+	setOnBackground();
+	checked = TRUE;
+}
+
+void RadioBox::markAsUnchecked() {
+	SetConsoleCursorPosition(out, checkPoint);
+	cout << " ";
+	setOffBackground();
+	checked = FALSE;
+}
+
+SHORT RadioBox::getYAxis() {
+	return checkPoint.Y;
 }
 
 RadioBox::~RadioBox()

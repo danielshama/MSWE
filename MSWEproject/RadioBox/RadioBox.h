@@ -14,19 +14,43 @@ class RadioBox
 {
 private:
 
-	int size = 0;
+	COORD checkPoint;
+	doubleCoord optionCoords;
+	string option;
 
-	POINT *radioPoints;
+	BOOL checked = FALSE;
+	BOOL hovered = FALSE;
 
-	HANDLE *out;
-	HANDLE *in;
+	DWORD noBackground;
+	DWORD backgroundOn;
 
-	doubleCoord *places;
+	//int size = 0;
+
+	//COORD *radioPoints;
+
+	HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+	HANDLE in = GetStdHandle(STD_INPUT_HANDLE);
+
+	//doubleCoord *places;
+
+	//CONSOLE_CURSOR_INFO noVisibleCursor;
+	//CONSOLE_CURSOR_INFO visibleCursor;
+
+	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
 
 public:
-	RadioBox(HANDLE *in, HANDLE *out, int size, string options[]);
-	void makeBoxes(string options[]);
-	void makeRadioButton(int num, string option);
+	RadioBox(string option, DWORD &noBackground, DWORD &backgroundOn);
+	//RadioBox(int size, string options[]);
+	//void makeBoxes(string options[]);
+
+	void makeRadioButton();
+	void setOnBackground();
+	void setOffBackground();
+	void markAsChecked();
+	void markAsUnchecked();
+	BOOL isChecked();
+	BOOL isHovered();
+	SHORT getYAxis();
 	~RadioBox();
 };
 

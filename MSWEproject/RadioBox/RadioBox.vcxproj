@@ -20,10 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RadioBox.h" />
+    <ClInclude Include="RadioMaster.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RadioBox.cpp" />
+    <ClCompile Include="RadioMaster.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{AF831FF5-F04D-4FD2-8491-2E792E874924}</ProjectGuid>

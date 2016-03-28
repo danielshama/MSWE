@@ -1,9 +1,8 @@
 #include "RadioBox.h"
 
 
-
 RadioBox::RadioBox(string option, DWORD &noBackground, DWORD &backgroundOn) {
-	this -> option = option;
+	this->option = option;
 
 	this->noBackground = noBackground;
 	this->backgroundOn = backgroundOn;
@@ -11,6 +10,7 @@ RadioBox::RadioBox(string option, DWORD &noBackground, DWORD &backgroundOn) {
 	makeRadioButton();
 
 }
+
 
 void RadioBox::makeRadioButton() {
 	cout << "[";
@@ -28,6 +28,7 @@ void RadioBox::makeRadioButton() {
 	cout << endl;
 
 }
+
 
 BOOL RadioBox::isChecked() {
 	return checked;

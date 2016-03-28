@@ -1,7 +1,6 @@
 #include "RadioMaster.h"
 
 
-
 RadioMaster::RadioMaster(string options[], int size)
 {
 	if (size < 2) {
@@ -41,19 +40,10 @@ void RadioMaster::addRadioBox(string option) {
 
 }
 
-/*
-void RadioMaster::markRadio(int num) {
-	RadioBox *temp = boxes.at(num);
-	if (!temp->isChecked()) {
-		temp->markAsChecked();
-	}
-}
-*/
-
 void RadioMaster::markHovered() {
 	SHORT needToMark = currentY - firstY;
 	for (int i = 0; i < size; i++) {
-		RadioBox *temp = boxes.at(i); 
+		RadioBox *temp = boxes.at(i);
 		if (i == needToMark) {
 			temp->markAsChecked();
 			continue;
@@ -67,16 +57,25 @@ void RadioMaster::setHoverBackground(SHORT y) {
 		RadioBox *temp = boxes.at(i);
 		SHORT radioY = temp->getYAxis();
 		if (radioY == y) {
-			if (!temp->isHovered() && !temp->isChecked() ) {
+			if (!temp->isHovered() && !temp->isChecked()) {
 				temp->setOnBackground();
 				currentY = y;
 			}
-		} else {
+		}
+		else {
 			if (!temp->isChecked() && temp->isHovered()) {
 				temp->setOffBackground();
 			}
 		}
 	}
+}
+
+SHORT RadioMaster::getTopY() {
+	return firstY;
+}
+
+SHORT RadioMaster::getBottomY() {
+	return lastY;
 }
 
 void RadioMaster::goUp() {

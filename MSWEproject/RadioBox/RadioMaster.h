@@ -3,6 +3,7 @@
 #include <vector>
 
 
+
 using namespace std;
 
 
@@ -26,11 +27,12 @@ private:
 public:
 	RadioMaster(string options[], int size);
 	void addRadioBox(string option);
-	//void markRadio(int num);
 	void setHoverBackground(SHORT y);
 	void goUp();
 	void goDown();
 	void markHovered();
+	SHORT getTopY();
+	SHORT getBottomY();
 
 	~RadioMaster();
 };

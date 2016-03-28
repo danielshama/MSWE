@@ -208,13 +208,13 @@ void ComboBox::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 	switch (mer.dwEventFlags) {
 
 	case 0:
-		//Right button press
+		//Left button press
 		if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED) {
 			checkClickedPosition(mer.dwMousePosition);
 		}
 		break;
 	case MOUSE_MOVED:
-		//Right button press
+		//Mouse moved
 		setHover(mer.dwMousePosition);
 		break;
 	}

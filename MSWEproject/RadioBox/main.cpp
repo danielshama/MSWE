@@ -2,6 +2,7 @@
 #include "RadioMaster.h"
 #include <Windows.h>
 
+
 using namespace std;
 
 HANDLE hStdin;
@@ -10,7 +11,7 @@ DWORD fdwSaveOldMode;
 
 void ErrorExit(LPSTR);
 
-void MouseEventProc(MOUSE_EVENT_RECORD);
+void MouseEventProc(MOUSE_EVENT_RECORD mer, RadioMaster *master);
 void ResizeEventProc(WINDOW_BUFFER_SIZE_RECORD);
 
 int main(void) {
@@ -63,7 +64,7 @@ int main(void) {
 				break;
 
 			case MOUSE_EVENT: // mouse input 
-				MouseEventProc(irInBuf[i].Event.MouseEvent);
+				MouseEventProc(irInBuf[i].Event.MouseEvent, radioMaster);
 				break;
 
 			case WINDOW_BUFFER_SIZE_EVENT: // scrn buf. resizing 
@@ -83,8 +84,32 @@ int main(void) {
 	}
 }
 
-void MouseEventProc(MOUSE_EVENT_RECORD mer) {
-	cout << "mouse pressed" << endl;
+void MouseEventProc(MOUSE_EVENT_RECORD mer, RadioMaster *master) {
+#ifndef MOUSE_HWHEELED
+#define MOUSE_HWHEELED 0x0008
+#endif
+	switch (mer.dwEventFlags) {
+
+	case 0:
+		//Left button press
+		if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED) {
+			SHORT yPosition = mer.dwMousePosition.Y;
+			if (yPosition >= master->getTopY() && yPosition <= master->getBottomY()) {
+				master->markHovered();
+			}
+			//checkClickedPosition(mer.dwMousePosition);
+		}
+		break;
+	case MOUSE_MOVED:
+		//Right button press
+
+		SHORT yPosition = mer.dwMousePosition.Y;
+		if (yPosition >= master->getTopY() && yPosition <= master->getBottomY()) {
+			master->setHoverBackground(yPosition);
+		}
+		//setHover(mer.dwMousePosition);
+		break;
+	}
 }
 
 void ErrorExit(LPSTR lpszMessage)

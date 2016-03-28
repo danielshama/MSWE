@@ -20,8 +20,8 @@ void TextBox::createTextBox(int width) {
 	SetConsoleCursorPosition(handle, c);
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	GetConsoleScreenBufferInfo(handle, &cbi);
-	DWORD wAttr2 = cbi.wAttributes | BACKGROUND_BLUE;
-	SetConsoleTextAttribute(handle, wAttr2);
+	DWORD wAttr = BACKGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+	SetConsoleTextAttribute(handle, wAttr);
 	for (int i = 0; i < width; i++) {
 		printf("%c", textBoxBuf[i]);
 	}
@@ -59,6 +59,14 @@ void TextBox::keyEventProc(KEY_EVENT_RECORD ker) {
 		else if (ker.wVirtualKeyCode == VK_LEFT) {
 			moveLeft();
 		}
+		//RIGHT key pressed
+		else if (ker.wVirtualKeyCode == VK_RWIN) {
+			moveRight();
+		}
+		//LEFT key pressed
+		else if (ker.wVirtualKeyCode == VK_LWIN) {
+			moveLeft();
+		}
 		//BACKSPACE key pressed
 		else if (ker.wVirtualKeyCode == VK_BACK) {
 			deleteCharecter();
@@ -92,11 +100,16 @@ void TextBox::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 }
 
 void TextBox::checkClickedPosition(COORD dwMousePosition) {
-	if (dwMousePosition.Y == c.Y && ( (dwMousePosition.X >= c.X) && (dwMousePosition.X < c.X + maxSize) )) {
+	if (dwMousePosition.Y == c.Y && ((dwMousePosition.X >= c.X) && (dwMousePosition.X < c.X + maxSize))) {
 		isClicked = true;
+		CONSOLE_CURSOR_INFO cci = { 10, TRUE };
+		SetConsoleCursorInfo(handle, &cci);
+		curserPosition = dwMousePosition.X - c.X;
 		changeCurserPosition(dwMousePosition.X);
 	}
 	else {
+		CONSOLE_CURSOR_INFO cci = { 100, FALSE };
+		SetConsoleCursorInfo(handle, &cci);
 		isClicked = false;
 	}
 }

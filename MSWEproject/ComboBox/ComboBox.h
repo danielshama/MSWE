@@ -14,24 +14,29 @@ private:
 	int width;
 	char** list;
 	boolean isOpen;
-	DWORD regularAttr;
 
-
-	void init(); 
+	//the initial style
+	void init();
+	//combobox open/close
 	void showOptions();
 	void hideOptions();
+	//events handlers
 	void MouseEventProc(MOUSE_EVENT_RECORD mer);
 	void checkClickedPosition(COORD dwMousePosition);
-
-	void chooseOption(int top);
-	void printDelimiter(int top);
-	void printSpace(int top);
-	void printOption(int top, int itemNum);
+	//the hover on choosen item and write it in the box
+	void chooseOption(int top, int lastColoredLine);
+	void setSelected(int listNum);
+	//print the requested line
+	void printDelimiter(int position);
+	void printSpace(int position);
+	void printOption(int position, int itemNum);
 
 public:
 
+	//ctor / dtor
 	ComboBox(int x, int y, char* options[], int size);
 	~ComboBox();
+	//input handle
 	void handleInput(INPUT_RECORD iRecord);
 
 };

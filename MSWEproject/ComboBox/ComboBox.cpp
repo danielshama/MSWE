@@ -1,6 +1,8 @@
-#define _CRT_SECURE_NO_WARNINGS 
 #include "ComboBox.h"
+#define _CRT_SECURE_NO_WARNINGS 
+
 int coloredLine;
+int backgroundLine;
 DWORD regularAttr;
 
 ComboBox::ComboBox(int x, int y, char* options[], int size) {
@@ -8,6 +10,7 @@ ComboBox::ComboBox(int x, int y, char* options[], int size) {
 	//defualt text width
 	width = 15;
 	coloredLine = -1;
+	backgroundLine = -1;
 	//set in the request position
 	c = { (short)x, (short)y };
 
@@ -18,10 +21,10 @@ ComboBox::ComboBox(int x, int y, char* options[], int size) {
 	//dynamic allocations
 	choosen = (char*)calloc(width, sizeof(char));
 	listSize = size;
-	list = (char**) calloc(size, sizeof(char*));
+	list = (char**)calloc(size, sizeof(char*));
 	for (int i = 0; i < size; i++) {
 		list[i] = (char*)calloc(width, sizeof(char));
-		strcpy(list[i], options[i]);
+		strcpy_s(list[i], width, options[i]);
 	}
 
 	//init parameters
@@ -47,7 +50,7 @@ void ComboBox::init() {
 	regularAttr = cbi.wAttributes;
 	DWORD wAttr2 = cbi.wAttributes | BACKGROUND_BLUE;
 	SetConsoleTextAttribute(handle, wAttr2);
-	for (int i = 0; i < width-1; i++) {
+	for (int i = 0; i < width - 1; i++) {
 		choosen[i] = ' ';
 		printf("%c", choosen[i]);
 	}
@@ -103,7 +106,7 @@ void ComboBox::hideOptions() {
 
 //printing the requested option to the top box
 void ComboBox::chooseOption(int position, int lastColoredLine) {
-	int listNum = position /2 - 1;
+	int listNum = position / 2 - 1;
 	SetConsoleCursorPosition(handle, c);
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	GetConsoleScreenBufferInfo(handle, &cbi);
@@ -117,12 +120,12 @@ void ComboBox::chooseOption(int position, int lastColoredLine) {
 }
 
 void ComboBox::setSelected(int lastColoredLine) {
-	printOption(lastColoredLine*2 + 2, lastColoredLine);
+	printOption(lastColoredLine * 2 + 2, lastColoredLine);
 	printOption(coloredLine * 2 + 2, coloredLine);
 }
 
 //print delimiter '-' all over the requested line (separate each option)
-void ComboBox::printDelimiter(int position){
+void ComboBox::printDelimiter(int position) {
 	COORD newCoord = { c.X, c.Y + (short)position };
 	SetConsoleCursorPosition(handle, newCoord);
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
@@ -139,15 +142,37 @@ void ComboBox::printOption(int position, int itemNum) {
 	SetConsoleCursorPosition(handle, newCoord);
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	GetConsoleScreenBufferInfo(handle, &cbi);
-	if (coloredLine == itemNum) {
-		DWORD wAttr = FOREGROUND_GREEN | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
-		SetConsoleTextAttribute(handle, wAttr);
-	}
-	else {
-		SetConsoleTextAttribute(handle, regularAttr);
-	}
+	SetConsoleTextAttribute(handle, regularAttr);
 	for (int i = 0; i < width; i++) {
 		printf("%c", list[itemNum][i]);
+	}
+}
+
+void ComboBox::printOptionHoverd(int position, int lastBackgroundLine) {
+	int lastPos = lastBackgroundLine * 2 + 2;
+	COORD newCoord = { c.X, c.Y + (short)position };
+	COORD lastCoord = { c.X, c.Y + (short)lastPos };
+	SetConsoleCursorPosition(handle, newCoord);
+	CONSOLE_SCREEN_BUFFER_INFO cbi;
+	GetConsoleScreenBufferInfo(handle, &cbi);
+	if (backgroundLine == lastBackgroundLine) {
+		return;
+	}
+	else {
+		int i = 0;
+		DWORD wAttr = BACKGROUND_INTENSITY;
+		SetConsoleTextAttribute(handle, wAttr);
+		//set hover on the new position
+		for (i = 0; i < width; i++) {
+			printf("%c", list[backgroundLine][i]);
+		}
+		//if (lastPos == 0) return;
+		SetConsoleCursorPosition(handle, lastCoord);
+		SetConsoleTextAttribute(handle, regularAttr);
+		//set non hover on the last position
+		for (i = 0; i < width; i++) {
+			printf("%c", list[lastBackgroundLine][i]);
+		}
 	}
 }
 
@@ -186,17 +211,37 @@ void ComboBox::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 
 	case 0:
 		//Right button press
-		if (mer.dwButtonState == RIGHTMOST_BUTTON_PRESSED) {
+		if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED) {
 			checkClickedPosition(mer.dwMousePosition);
 		}
 		break;
+	case MOUSE_MOVED:
+		//Right button press
+		setHover(mer.dwMousePosition);
+		break;
+	}
+}
+
+void ComboBox::setHover(COORD dwMousePosition) {
+	int x = dwMousePosition.X;
+	int y = dwMousePosition.Y;
+
+	if (x >= c.X + 2 && x <= c.X + 15 && y >= c.Y && y <= c.Y + listSize * 2) {
+		for (int i = 2; i <= 2 * listSize; i += 2) {
+			if (dwMousePosition.Y == c.Y + i) {
+				int lastBackgroundLine = backgroundLine;
+				backgroundLine = i / 2 - 1;
+				if (lastBackgroundLine == -1) lastBackgroundLine = 0;
+				printOptionHoverd(i, lastBackgroundLine);
+			}
+		}
 	}
 }
 
 //check if the clicked is relevant for this combo box.
 //if yes - check the click position and choose the right operation
 void ComboBox::checkClickedPosition(COORD dwMousePosition) {
-	if (dwMousePosition.X == c.X + width && dwMousePosition.Y == c.Y) {
+	if (dwMousePosition.X == c.X + width - 1 && dwMousePosition.Y == c.Y) {
 		if (isOpen == true) {
 			isOpen = false;
 			hideOptions();
@@ -207,7 +252,7 @@ void ComboBox::checkClickedPosition(COORD dwMousePosition) {
 		}
 	}
 	else if (dwMousePosition.X >= c.X && dwMousePosition.X < c.X + width) {
-		for (int i = 2; i <= 2 * listSize; i+=2) {
+		for (int i = 2; i <= 2 * listSize; i += 2) {
 			if (dwMousePosition.Y == c.Y + i) {
 				int lastColoredLine = coloredLine;
 				coloredLine = i / 2 - 1;

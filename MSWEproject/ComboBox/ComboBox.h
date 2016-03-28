@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <stdio.h>
+#include<string>
 
 class ComboBox
 {
@@ -13,7 +14,7 @@ private:
 	int listSize;
 	int width;
 	char** list;
-	boolean isOpen;
+	bool isOpen;
 
 	//the initial style
 	void init();
@@ -26,10 +27,12 @@ private:
 	//the hover on choosen item and write it in the box
 	void chooseOption(int top, int lastColoredLine);
 	void setSelected(int listNum);
+	void setHover(COORD dwMousePosition);
 	//print the requested line
 	void printDelimiter(int position);
 	void printSpace(int position);
 	void printOption(int position, int itemNum);
+	void printOptionHoverd(int position, int lastBackgroundLine);
 
 public:
 
@@ -40,4 +43,3 @@ public:
 	void handleInput(INPUT_RECORD iRecord);
 
 };
-

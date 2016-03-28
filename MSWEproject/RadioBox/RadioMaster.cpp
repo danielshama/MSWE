@@ -41,14 +41,6 @@ void RadioMaster::addRadioBox(string option) {
 
 }
 
-void RadioMaster::setHoverBackgroundOn(int num) {
-	boxes.at(num)->setOnBackground();
-}
-
-void RadioMaster::setHoverBackgroundOff(int num) {
-	boxes.at(num)->setOffBackground();
-}
-
 void RadioMaster::markRadio(int num) {
 	RadioBox *temp = boxes.at(num);
 	if (!temp->isChecked()) {

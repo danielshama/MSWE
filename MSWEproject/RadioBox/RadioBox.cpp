@@ -12,40 +12,6 @@ RadioBox::RadioBox(string option, DWORD &noBackground, DWORD &backgroundOn) {
 
 }
 
-/*
-RadioBox::RadioBox(int size, string options[])
-{
-	this->size = size;
-
-	if (size <= 0) {
-		cout << "There is no content to the RadioBox" << endl;
-		exit(1);
-	}
-
-
-
-	cout << endl; //going down one line (just in case)
-
-	places = new doubleCoord[size];
-
-	radioPoints = new COORD[size];
-
-	makeBoxes(options);
-
-	noVisibleCursor = { 100, true };
-	SetConsoleCursorInfo(out, &noVisibleCursor);
-	SetConsoleCursorPosition(out, radioPoints[0]);
-}
-*/
-
-/*
-void RadioBox::makeBoxes(string options[]) {
-	for (int i = 0; i < size; i++) {
-		makeRadioButton(i, options[i]);
-	}
-}
-*/
-
 void RadioBox::makeRadioButton() {
 	cout << "[";
 	GetConsoleScreenBufferInfo(out, &csbiInfo);
@@ -62,38 +28,6 @@ void RadioBox::makeRadioButton() {
 	cout << endl;
 
 }
-
-/*
-void RadioBox::makeRadioButton(int num, string option) {
-	cout << "(";
-	GetConsoleScreenBufferInfo(out, &csbiInfo);
-	radioPoints[num].X = csbiInfo.dwCursorPosition.X;
-	radioPoints[num].Y = csbiInfo.dwCursorPosition.Y;
-
-	//noVisibleCursor = { 100, FALSE };
-	//SetConsoleCursorInfo(out, &noVisibleCursor);
-	cout << " ";
-
-	//visibleCursor = { 50, TRUE };
-	//SetConsoleCursorInfo(out, &visibleCursor);
-	cout << ") - ";
-
-	GetConsoleScreenBufferInfo(out, &csbiInfo);
-	//I need the first coordinate of the option's sentence
-	places[num].start.X = csbiInfo.dwCursorPosition.X;
-	places[num].start.Y = csbiInfo.dwCursorPosition.Y;
-
-	//Need to set the marking background - ask Kasus!!!
-
-	//Putting the string (describes the option)
-	cout << option;
-
-	GetConsoleScreenBufferInfo(out, &csbiInfo);//saving the last coordinate of the radio option
-	places[num].end.X = csbiInfo.dwCursorPosition.X;
-	places[num].end.Y = csbiInfo.dwCursorPosition.Y;
-	cout << endl;
-}
-*/
 
 BOOL RadioBox::isChecked() {
 	return checked;

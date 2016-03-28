@@ -25,10 +25,8 @@ private:
 
 public:
 	RadioMaster(string options[], int size);
-	void setHoverBackgroundOn(int num);
-	void setHoverBackgroundOff(int num);
 	void addRadioBox(string option);
-	void markRadio(int num);
+	//void markRadio(int num);
 	void setHoverBackground(SHORT y);
 	void goUp();
 	void goDown();

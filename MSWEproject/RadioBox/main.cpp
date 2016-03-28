@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include <iostream>
 #include "RadioMaster.h"
 #include <Windows.h>

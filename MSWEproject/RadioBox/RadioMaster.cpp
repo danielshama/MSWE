@@ -41,12 +41,14 @@ void RadioMaster::addRadioBox(string option) {
 
 }
 
+/*
 void RadioMaster::markRadio(int num) {
 	RadioBox *temp = boxes.at(num);
 	if (!temp->isChecked()) {
 		temp->markAsChecked();
 	}
 }
+*/
 
 void RadioMaster::markHovered() {
 	SHORT needToMark = currentY - firstY;

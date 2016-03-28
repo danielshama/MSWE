@@ -29,7 +29,7 @@ void TextBox::createTextBox(int width) {
 
 void TextBox::handleInput(INPUT_RECORD iRecord) {
 
-	if (!isClicked) return;
+	//if (!isClicked) return;
 	handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	changeCurserPosition(curserPosition);
 	switch (iRecord.EventType)
@@ -49,35 +49,30 @@ void TextBox::handleInput(INPUT_RECORD iRecord) {
 }
 
 void TextBox::keyEventProc(KEY_EVENT_RECORD ker) {
-	if (curserPosition >= 0  && curserPosition < maxSize) {
-		if (ker.bKeyDown) {
+	if (ker.bKeyDown) {
 
-			//RIGHT key pressed
-			if (ker.wVirtualKeyCode == VK_RIGHT) {
+		//RIGHT key pressed
+		if (ker.wVirtualKeyCode == VK_RIGHT) {
+			moveRight();
+		}
+		//LEFT key pressed
+		else if (ker.wVirtualKeyCode == VK_LEFT) {
+			moveLeft();
+		}
+		//BACKSPACE key pressed
+		else if (ker.wVirtualKeyCode == VK_BACK) {
+			deleteCharecter();
+		}
+		//TAB key pressed
+		else if (ker.wVirtualKeyCode == VK_TAB) {
+			if (curserPosition < maxSize - 3) {
+				moveRight();
+				moveRight();
 				moveRight();
 			}
-			//LEFT key pressed
-			else if (ker.wVirtualKeyCode == VK_LEFT) {
-				moveLeft();
-			}
-			//BACKSPACE key pressed
-			else if (ker.wVirtualKeyCode == VK_BACK) {
-				deleteCharecter();
-			}
-			//TAB key pressed
-			else if (ker.wVirtualKeyCode == VK_TAB) {
-				if (curserPosition < maxSize - 3) {
-					moveRight();
-					moveRight();
-					moveRight();
-				}
-			}
-			//Write the charecter to the console 
-			else addCharecter(ker.uChar.AsciiChar);
 		}
-
-	} else {
-		curserPosition = (curserPosition < 0) ? 0 : maxSize-1;
+		//Write the charecter to the console 
+		else addCharecter(ker.uChar.AsciiChar);
 	}
 }
 
@@ -89,7 +84,7 @@ void TextBox::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 		
 		case 0:
 			//Right button press
-			if (mer.dwButtonState == RIGHTMOST_BUTTON_PRESSED) {
+			if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED) {
 				checkClickedPosition(mer.dwMousePosition);
 			}
 			break;
@@ -99,6 +94,7 @@ void TextBox::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 void TextBox::checkClickedPosition(COORD dwMousePosition) {
 	if (dwMousePosition.Y == c.Y && ( (dwMousePosition.X >= c.X) && (dwMousePosition.X < c.X + maxSize) )) {
 		isClicked = true;
+		changeCurserPosition(dwMousePosition.X);
 	}
 	else {
 		isClicked = false;
@@ -124,6 +120,20 @@ void TextBox::deleteCharecter(){
 	printf(" ");
 	textBoxBuf[curserPosition] = ' ';
 	moveLeft();
+	shiftLeft();
+}
+
+void TextBox::shiftLeft() {
+	int curserPtr = curserPosition;
+	moveRight();
+	for (int i = curserPtr + 1; i < maxSize-1; i++) {
+		textBoxBuf[i] = textBoxBuf[i + 1];
+		addCharecter(textBoxBuf[i]);
+	}
+	textBoxBuf[maxSize - 1] = ' ';
+	addCharecter(textBoxBuf[maxSize - 1]);
+	curserPosition = curserPtr;
+	changeCurserPosition(curserPtr);
 }
 
 void TextBox::addCharecter(char ch) {

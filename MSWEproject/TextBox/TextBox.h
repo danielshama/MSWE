@@ -27,6 +27,7 @@ public:
 	void moveRight();
 	void moveLeft();
 	void deleteCharecter();
+	void shiftLeft();
 	void addCharecter(char c);
 	void changeCurserPosition(int position);
 	void errorInput();

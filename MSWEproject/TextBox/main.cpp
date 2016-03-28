@@ -12,7 +12,6 @@ int main(VOID)
 	DWORD cNumRead, fdwMode, i;
 	INPUT_RECORD irInBuf[128];
 	TextBox textBox = TextBox(10, 15, 40);
-	int counter = 0;
 
 	// Get the standard input handle. 
 	hStdin = GetStdHandle(STD_INPUT_HANDLE);

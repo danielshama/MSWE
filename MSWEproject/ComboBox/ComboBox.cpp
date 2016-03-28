@@ -46,12 +46,14 @@ void ComboBox::init() {
 
 	int i, j;
 	boolean endFlag;
-	CONSOLE_SCREEN_BUFFER_INFO cbi;
-	DWORD wAttr2 = cbi.wAttributes | BACKGROUND_BLUE;
+
 	//initialize the top box 
 	SetConsoleCursorPosition(handle, c);
+
+	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	GetConsoleScreenBufferInfo(handle, &cbi);
 	regularAttr = cbi.wAttributes;
+	DWORD wAttr2 = cbi.wAttributes | BACKGROUND_BLUE;
 	SetConsoleTextAttribute(handle, wAttr2);
 	for (i = 0; i < width - 1; i++) {
 		choosen[i] = ' ';
@@ -97,11 +99,10 @@ void ComboBox::hideOptions() {
 //printing the requested option to the top box
 void ComboBox::chooseOption(int position, int lastColoredLine) {
 	int listNum = position / 2 - 1 , i;
-	CONSOLE_SCREEN_BUFFER_INFO cbi;
-	DWORD wAttr2 = cbi.wAttributes | BACKGROUND_BLUE;
-
 	SetConsoleCursorPosition(handle, c);
+	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	GetConsoleScreenBufferInfo(handle, &cbi);
+	DWORD wAttr2 = cbi.wAttributes | BACKGROUND_BLUE;
 	SetConsoleTextAttribute(handle, wAttr2);
 	for (i = 0; i < width - 1; i++) {
 		choosen[i] = list[listNum][i];

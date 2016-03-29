@@ -1,7 +1,6 @@
 #pragma once
 #include <Windows.h>
 #include <stdio.h>
-#include <string.h>
 
 class TextBox {
 
@@ -16,7 +15,7 @@ private :
 
 public:
 
-	TextBox(int x, int y, int width, string str);
+	TextBox(int x, int y, int width);
 	~TextBox();
 
 	void createTextBox(int width);

@@ -1,8 +1,9 @@
 #pragma once
 #include <Windows.h>
-#include <stdio.h>
 #include <iostream>
-#include "Label.h"
+#include <string>
+//#include "Label.h"
+using namespace std;
 
 
 class ItemList
@@ -10,12 +11,19 @@ class ItemList
 private:
 	HANDLE handle;
 	char* buffer;
-	Label lbl;
+	string lbl;
 	COORD coord;
 	boolean isClicked;
+	boolean isChecked;
+	int curserPosition;
+	short size;
+
 public:
 	ItemList(int x, int y, string str);
 	void create();
+	void check();
+	void click();
+	void unclick();
 	~ItemList();
 };
 

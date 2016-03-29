@@ -7,7 +7,7 @@ Label::Label(int x, int y, string str) {
 	//create();
 }
 Label::Label(string str) {
-	c = { 0, 0 };
+	c = { (short) 0, (short) 0 };
 	labelStr = str;
 	handle = GetStdHandle(STD_OUTPUT_HANDLE);
 }

@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include <string>
+#include <iostream>
 
 using namespace std;
 class Label
@@ -14,7 +15,9 @@ private:
 
 public:
 	Label(int x, int y, string str);
+	Label(string str);
 	~Label();
-	void createLabel();
+	void create();
+	void create(COORD coord);
 };
 

@@ -11,6 +11,7 @@ int main(VOID) {
 	//light green on a black background
 	//located in someplace.
 	Label newLabel = Label(30, 10, "Mor Kasus label:");
+	newLabel.create();
 	getchar();
 	return 0;
 }

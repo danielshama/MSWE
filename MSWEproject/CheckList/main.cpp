@@ -16,7 +16,7 @@ int main(VOID)
 
 	DWORD cNumRead, fdwMode, i;
 	INPUT_RECORD irInBuf[128];
-	string items[] = {"Daniel", "Or", "Mor", "Noam" };
+	string items[] = { "Daniel", "Or", "Mor", "Noam" };
 	CheckList cl = CheckList(items, 4, 10, 10);
 
 	int counter = 0;

@@ -50,6 +50,7 @@ int main(void) {
 			switch (irInBuf[i].EventType)
 			{
 			case KEY_EVENT: // keyboard input 
+				
 				if (irInBuf[i].Event.KeyEvent.bKeyDown) {
 					if (irInBuf[i].Event.KeyEvent.wVirtualKeyCode == VK_UP) {
 						radioMaster->goUp();

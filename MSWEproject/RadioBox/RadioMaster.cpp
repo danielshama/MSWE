@@ -96,6 +96,25 @@ void RadioMaster::goDown() {
 	setHoverBackground(currentY + 1);
 }
 
+void RadioMaster::checkKeyEvent(INPUT_RECORD &irInBuf) {
+	
+	if (irInBuf.Event.KeyEvent.bKeyDown) {
+		WORD key = irInBuf.Event.KeyEvent.wVirtualKeyCode;
+		if (key == VK_UP) {
+			goUp();
+		}
+		if (key == VK_DOWN) {
+			goDown();
+		}
+		if (key == VK_TAB) {
+			goDown
+		}
+		if (key == VK_RETURN) {
+			radioMaster->markHovered();
+		}
+	}
+}
+
 RadioMaster::~RadioMaster()
 {
 	int size = boxes.size();

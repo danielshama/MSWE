@@ -100,14 +100,13 @@ void CheckList::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 			//setHover(mer.dwMousePosition);
 			break;
 		}
-	}
 }
 boolean CheckList::checkClickedPosition(COORD dwMousePosition) {
 	CONSOLE_SCREEN_BUFFER_INFO ct;
 	if (!GetConsoleScreenBufferInfo(handler, &ct))
 	{
 		cout << "GetConsoleScreenBufferInfo failed" << GetLastError << endl;
-		return;
+		return false;
 	}
 	COORD c = ct.dwCursorPosition;
 	if (c.X >= coord.X &&

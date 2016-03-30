@@ -6,7 +6,7 @@ CheckList::CheckList(string opts[], int optAmount, short x, short y){
 	ifClicked = true;
 	options = opts;
 	handler = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_CURSOR_INFO cci = { 50, FALSE };
+	CONSOLE_CURSOR_INFO cci = { 100, FALSE };
 	SetConsoleCursorInfo(handler, &cci);
 	width = 0;
 	for (int i = 0; i < amount; i++) {
@@ -53,20 +53,21 @@ void CheckList::keyEventProc(KEY_EVENT_RECORD ker) {
 		c.Y <= coord.Y + amount) {
 
 		if (ker.bKeyDown) {
-			int item = whoClicked();
-			if (item < 0) return;
+			int clickedItem = whoClicked();
+			if (clickedItem < 0) return;
 			//ENTER key pressed
 			if (ker.wVirtualKeyCode == VK_RETURN) {
-				items[item].check();
+				items[clickedItem].check();
 			} else if (ker.wVirtualKeyCode == VK_TAB || ker.wVirtualKeyCode == VK_DOWN) {
-				if (item < amount) {
-					items[item].unclick();
-					isChecked[item] = 0;
-					items[item + 1].click();
-					isChecked[item + 1] = 1;
+				if (clickedItem < amount) {
+					items[clickedItem].unclick();
+					isClicked[clickedItem] = 0;
+					items[clickedItem + 1].click();
+					isClicked[clickedItem + 1] = 1;
+					return;
 				}
 			} else if (ker.wVirtualKeyCode == VK_UP) {
-				if (item) return;
+				if (!clickedItem) return;
 				items[whoClicked()].check();
 			}
 		}
@@ -114,6 +115,9 @@ int CheckList::whoClicked() {
 		if (isClicked[i]) return i;
 	}
 	return -1;
+}
+vector<int>  CheckList::whoChecked() {
+	return isChecked;
 }
 CheckList::~CheckList(){
 }

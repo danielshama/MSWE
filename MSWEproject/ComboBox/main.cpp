@@ -1,6 +1,6 @@
-﻿#include <windows.h>
+#include <windows.h>
 #include <stdio.h>
-#include "TextBox.h"
+#include "ComboBox.h"
 
 HANDLE hStdin;
 DWORD fdwSaveOldMode;
@@ -11,7 +11,8 @@ int main(VOID)
 {
 	DWORD cNumRead, fdwMode, i;
 	INPUT_RECORD irInBuf[128];
-	TextBox textBox = TextBox(10, 15, 40);
+	char* arr[] = { "item1", "item2", "item3", "item4" };
+	ComboBox comboBox = ComboBox(7, 7, arr, 4);
 
 	// Get the standard input handle. 
 	hStdin = GetStdHandle(STD_INPUT_HANDLE);
@@ -41,7 +42,7 @@ int main(VOID)
 		// Dispatch the events to the appropriate handler. 
 		for (i = 0; i < cNumRead; i++) {
 			//Send the input record to the textbox handler
-			textBox.handleInput(irInBuf[i]);
+			comboBox.handleInput(irInBuf[i]);
 		}
 	}
 

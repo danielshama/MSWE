@@ -31,7 +31,6 @@ void TextBox::createTextBox(int width) {
 
 void TextBox::handleInput(INPUT_RECORD iRecord) {
 
-	//if (!isClicked) return;
 	handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	changeCurserPosition(curserPosition);
 	switch (iRecord.EventType)
@@ -50,6 +49,7 @@ void TextBox::handleInput(INPUT_RECORD iRecord) {
 }
 
 void TextBox::keyEventProc(KEY_EVENT_RECORD ker) {
+	if (!isClicked) return;
 	if (ker.bKeyDown) {
 
 		//RIGHT key pressed
@@ -159,7 +159,7 @@ void TextBox::addCharecter(char ch) {
 }
 
 void TextBox::changeCurserPosition(int position){
-	COORD newCoord = { c.X + position, c.Y };
+	COORD newCoord = { (short) c.X + (short) position, c.Y };
 	SetConsoleCursorPosition(handle, newCoord);
 }
 

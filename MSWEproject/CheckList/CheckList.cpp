@@ -56,7 +56,7 @@ void ItemList::check() {
 	}
 }
 void ItemList::click() {
-	DWORD color =  FOREGROUND_GREEN | FOREGROUND_RED;
+	DWORD color = FOREGROUND_GREEN | FOREGROUND_RED;
 	DWORD background;
 	if (!FillConsoleOutputAttribute(handle, color, size, coord, &background)) {
 		cout << "failed to change the background" << endl;

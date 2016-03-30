@@ -1,3 +1,4 @@
+
 #pragma once
 #include <Windows.h>
 #include <iostream>
@@ -26,4 +27,3 @@ public:
 	void unclick();
 	~ItemList();
 };
-

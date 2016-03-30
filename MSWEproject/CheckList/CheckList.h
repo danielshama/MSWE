@@ -17,7 +17,7 @@ class CheckList
 		vector<ItemList> items;
 		vector<int> isChecked;
 		vector<int> isClicked;
-		void checkClickedPosition(COORD dwMousePosition);
+		boolean checkClickedPosition(COORD dwMousePosition);
 		int whoClicked();
 	public:
 		CheckList(string opts[], int optAmount, short x, short y);

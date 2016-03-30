@@ -46,32 +46,29 @@ void CheckList::keyEventProc(KEY_EVENT_RECORD ker) {
 		cout << "GetConsoleScreenBufferInfo failed" << GetLastError << endl;
 		return;
 	}
-	COORD c = ct.dwCursorPosition;
-	if (c.X >= coord.X && 
-		c.X <= (coord.X + width) &&
-		c.Y >= coord.Y &&
-		c.Y <= coord.Y + amount) {
-
-		if (ker.bKeyDown) {
-			int clickedItem = whoClicked();
-			if (clickedItem < 0) return;
-			//ENTER key pressed
-			if (ker.wVirtualKeyCode == VK_RETURN) {
-				items[clickedItem].check();
-			} else if (ker.wVirtualKeyCode == VK_TAB || ker.wVirtualKeyCode == VK_DOWN) {
-				if (clickedItem < amount) {
-					items[clickedItem].unclick();
-					isClicked[clickedItem] = 0;
-					items[clickedItem + 1].click();
-					isClicked[clickedItem + 1] = 1;
-					return;
-				}
-			} else if (ker.wVirtualKeyCode == VK_UP) {
-				if (!clickedItem) return;
-				items[whoClicked()].check();
+	if (ker.bKeyDown) {
+		int clickedItem = whoClicked();
+		if (clickedItem < 0) return;
+		//ENTER key pressed
+		if (ker.wVirtualKeyCode == VK_RETURN) {
+			items[clickedItem].check();
+		}
+		else if (ker.wVirtualKeyCode == VK_TAB || ker.wVirtualKeyCode == VK_DOWN) {
+			if (clickedItem < amount - 1) {
+				items[clickedItem].unclick();
+				isClicked[clickedItem] = 0;
+				items[clickedItem + 1].click();
+				isClicked[clickedItem + 1] = 1;
 			}
 		}
-
+		else if (ker.wVirtualKeyCode == VK_UP) {
+			if (clickedItem > 0) {
+				items[clickedItem].unclick();
+				isClicked[clickedItem] = 0;
+				items[clickedItem - 1].click();
+				isClicked[clickedItem - 1] = 1;
+			}
+		}
 	}
 	
 }
@@ -82,16 +79,30 @@ void CheckList::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 #endif
 	switch (mer.dwEventFlags) {
 
-	case 0:
-		//Right button press
-		if (mer.dwButtonState == RIGHTMOST_BUTTON_PRESSED) {
-			checkClickedPosition(mer.dwMousePosition);
-			//if (isClicked == true) checked();
+		case 0:
+			//Right button press
+			if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED) {
+				if (checkClickedPosition(mer.dwMousePosition)) {
+					SHORT yPosition = mer.dwMousePosition.Y;
+					items[yPosition - coord.Y].check();
+				}
+			}
+			break;
+		case MOUSE_MOVED:
+			//Right button press
+
+			if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED) {
+				if (checkClickedPosition(mer.dwMousePosition)) {
+					SHORT yPosition = mer.dwMousePosition.Y;
+					items[yPosition - coord.Y].click();
+				}
+			}
+			//setHover(mer.dwMousePosition);
+			break;
 		}
-		break;
 	}
 }
-void CheckList::checkClickedPosition(COORD dwMousePosition) {
+boolean CheckList::checkClickedPosition(COORD dwMousePosition) {
 	CONSOLE_SCREEN_BUFFER_INFO ct;
 	if (!GetConsoleScreenBufferInfo(handler, &ct))
 	{
@@ -103,10 +114,10 @@ void CheckList::checkClickedPosition(COORD dwMousePosition) {
 		c.X <= (coord.X + width) &&
 		c.Y >= coord.Y &&
 		c.Y <= coord.Y + amount) {
-		ifClicked = true;
+		return true;
 	}
 	else {
-		ifClicked = false;
+		return false;
 	}
 }
 

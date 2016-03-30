@@ -1,84 +1,127 @@
-#include "ItemList.h"
+#include "CheckList.h"
 
-ItemList::ItemList(int x, int y, string str) {
-	handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	coord = { (short)x, (short)y };
-	buffer = new char[10];
-	isClicked = false;
-	isChecked = false;
-	lbl = str;
-	size = str.length() + 4;
-	curserPosition = 0;
-}
-
-void ItemList::create() {
-	SetConsoleCursorPosition(handle, coord);
-
-	CONSOLE_SCREEN_BUFFER_INFO cbi;
-	GetConsoleScreenBufferInfo(handle, &cbi);
-
+CheckList::CheckList(string opts[], int optAmount, short x, short y){
+	amount = optAmount;
+	coord = { x, y };
+	ifClicked = true;
+	options = opts;
+	handler = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO cci = { 100, FALSE };
-	SetConsoleCursorInfo(handle, &cci);
-
-	DWORD wAttr2 = BACKGROUND_GREEN | BACKGROUND_RED;
-	SetConsoleTextAttribute(handle, wAttr2);
-	cout << "[ ] " + lbl << endl;
+	SetConsoleCursorInfo(handler, &cci);
+	width = 0;
+	for (int i = 0; i < amount; i++) {
+		if (width < opts[i].length()) width = opts[i].length();
+		items.push_back(ItemList(x, y + i, opts[i]));
+		items[i].create();
+		isChecked.push_back(0);
+		isClicked.push_back(0);
+}
+	items[0].click();
+	isClicked[0] = 1;
 }
 
+void CheckList::handleInput(INPUT_RECORD iRecord) {
 
-void ItemList::check() {
-	DWORD background;
+	if (!ifClicked) return;
+	handler = GetStdHandle(STD_OUTPUT_HANDLE);
+	switch (iRecord.EventType)
+	{
+	case KEY_EVENT: // keyboard input 
+		keyEventProc(iRecord.Event.KeyEvent);
+		break;
 
-	SetConsoleCursorPosition(handle, coord);
-	if (!isChecked) {
+	case MOUSE_EVENT: // mouse input 
+		MouseEventProc(iRecord.Event.MouseEvent);
+		break;
 
-		cout << "[X] " << lbl;
+	default:
+		break;
+}
+}
 
-		if (!FillConsoleOutputAttribute(handle,
-			BACKGROUND_BLUE | BACKGROUND_RED,
-			size, coord, &background)) {
-			cout << "failed to change the background" << endl;
-			exit(1);
+void CheckList::keyEventProc(KEY_EVENT_RECORD ker) {
+	CONSOLE_SCREEN_BUFFER_INFO ct;
+	if (!GetConsoleScreenBufferInfo(handler, &ct))
+	{
+		cout << "GetConsoleScreenBufferInfo failed" << GetLastError << endl;
+		return;
+	}
+	if (ker.bKeyDown) {
+		int clickedItem = whoClicked();
+		if (clickedItem < 0) return;
+		//ENTER key pressed
+		if (ker.wVirtualKeyCode == VK_RETURN) {
+			items[clickedItem].check();
 		}
-		isChecked = true;
+		else if (ker.wVirtualKeyCode == VK_TAB || ker.wVirtualKeyCode == VK_DOWN || ker.wVirtualKeyCode == VK_NUMPAD2) {
+			if (clickedItem < amount - 1) {
+				items[clickedItem].unclick();
+				isClicked[clickedItem] = 0;
+				items[clickedItem + 1].click();
+				isClicked[clickedItem + 1] = 1;
+			}
+		}
+		else if (ker.wVirtualKeyCode == VK_UP || ker.wVirtualKeyCode == VK_NUMPAD8) {
+			if (clickedItem > 0) {
+				items[clickedItem].unclick();
+				isClicked[clickedItem] = 0;
+				items[clickedItem - 1].click();
+				isClicked[clickedItem - 1] = 1;
+			}
+		}
+	}
+
+	}
+
+void CheckList::MouseEventProc(MOUSE_EVENT_RECORD mer) {
+#ifndef MOUSE_HWHEELED
+#define MOUSE_HWHEELED 0x0008
+#endif
+	switch (mer.dwEventFlags) {
+
+	case 0:
+		//Right button press
+		if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED) {
+			if (checkMousePosition(mer.dwMousePosition)) {
+				SHORT yPosition = mer.dwMousePosition.Y;
+				items[yPosition - coord.Y].check();
+		}
+	}
+		break;
+	case MOUSE_MOVED:
+		if (checkMousePosition(mer.dwMousePosition)) {
+			int clickedItem = whoClicked();
+			if (clickedItem < 0) return;
+			SHORT yPosition = mer.dwMousePosition.Y;
+			items[clickedItem].unclick();
+			isClicked[clickedItem] = 0;
+			items[yPosition - coord.Y].click();
+			isClicked[yPosition - coord.Y] = 1;
+}
+		break;
+	}
+}
+
+boolean CheckList::checkMousePosition(COORD dwMousePosition) {
+	if (dwMousePosition.X >= coord.X &&
+		dwMousePosition.X <= (coord.X + width) &&
+		dwMousePosition.Y >= coord.Y &&
+		dwMousePosition.Y <= coord.Y + amount-1) {
+		return true;
 	}
 	else {
-
-		cout << "[ ] " << lbl;
-
-		if (!FillConsoleOutputAttribute(
-			handle, BACKGROUND_GREEN | BACKGROUND_RED,
-			size, coord, &background)) {
-			cout << "failed to change the background" << endl;
-			exit(1);
-		}
-		isChecked = false;
+		return false;
 	}
 }
-void ItemList::click() {
-	DWORD color = FOREGROUND_GREEN | FOREGROUND_RED;
-	DWORD background;
-	if (!FillConsoleOutputAttribute(handle, color, size, coord, &background)) {
-		cout << "failed to change the background" << endl;
-		exit(1);
-	}
-	isClicked = true;
-}
-void ItemList::unclick() {
-	DWORD color;
-	if (!isChecked) {
-		color = BACKGROUND_GREEN | BACKGROUND_RED;
-	}
-	else {
-		color = BACKGROUND_BLUE | BACKGROUND_RED;
-	}
-	DWORD background;
-	if (!FillConsoleOutputAttribute(handle, color, size, coord, &background)) {
-		cout << "failed to change the background" << endl;
-		exit(1);
-	}
-	isClicked = false;
-}
 
-ItemList::~ItemList() {
+int CheckList::whoClicked() {
+	for (int i = 0; i < amount; i++) {
+		if (isClicked[i]) return i;
+	}
+	return -1;
+	}
+vector<int>  CheckList::whoChecked() {
+	return isChecked;
+}
+CheckList::~CheckList(){
 }

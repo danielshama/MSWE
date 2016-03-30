@@ -20,7 +20,7 @@ void ItemList::create() {
 	CONSOLE_CURSOR_INFO cci = { 100, FALSE };
 	SetConsoleCursorInfo(handle, &cci);
 
-	DWORD wAttr2 = cbi.wAttributes | BACKGROUND_BLUE;
+	DWORD wAttr2 = BACKGROUND_GREEN | BACKGROUND_RED;
 	SetConsoleTextAttribute(handle, wAttr2);
 	cout << "[ ] " + lbl << endl;
 }
@@ -30,7 +30,7 @@ void ItemList::check() {
 	DWORD background;
 
 	SetConsoleCursorPosition(handle, coord);
-	if (isChecked == false) {
+	if (!isChecked) {
 
 		cout << "[X] " << lbl;
 
@@ -46,7 +46,9 @@ void ItemList::check() {
 
 		cout << "[ ] " << lbl;
 
-		if (!FillConsoleOutputAttribute(handle, BACKGROUND_BLUE, size, coord, &background)) {
+		if (!FillConsoleOutputAttribute(
+			handle, BACKGROUND_GREEN | BACKGROUND_RED,
+			size, coord, &background)) {
 			cout << "failed to change the background" << endl;
 			exit(1);
 		}
@@ -54,13 +56,7 @@ void ItemList::check() {
 	}
 }
 void ItemList::click() {
-	DWORD color;
-	if (!isChecked) {
-		color = BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED; //gray
-	}
-	else {
-		color = BACKGROUND_BLUE | BACKGROUND_GREEN; //green
-	}
+	DWORD color =  FOREGROUND_GREEN | FOREGROUND_RED;
 	DWORD background;
 	if (!FillConsoleOutputAttribute(handle, color, size, coord, &background)) {
 		cout << "failed to change the background" << endl;
@@ -71,7 +67,7 @@ void ItemList::click() {
 void ItemList::unclick() {
 	DWORD color;
 	if (!isChecked) {
-		color = BACKGROUND_BLUE;
+		color = BACKGROUND_GREEN | BACKGROUND_RED;
 	}
 	else {
 		color = BACKGROUND_BLUE | BACKGROUND_RED;

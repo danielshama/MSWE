@@ -25,14 +25,6 @@ int main(void) {
 	return 0;
 }
 
-
-/*
-HANDLE hStdin;
-HANDLE hStdout;
-DWORD fdwSaveOldMode;
-
-
-
 VOID ErrorExit(LPSTR);
 VOID KeyEventProc(KEY_EVENT_RECORD);
 VOID MouseEventProc(MOUSE_EVENT_RECORD);
@@ -42,9 +34,6 @@ VOID ResizeEventProc(WINDOW_BUFFER_SIZE_RECORD);
 
 int main(void)
 {
-
-
-	
 	DWORD cNumRead, fdwMode, i;
 	INPUT_RECORD irInBuf[128];
 	int counter = 0;

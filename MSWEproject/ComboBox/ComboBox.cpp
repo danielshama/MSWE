@@ -215,6 +215,7 @@ void ComboBox::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 		break;
 	case MOUSE_MOVED:
 		//Mouse moved
+		if (!isOpen) return;
 		setHover(mer.dwMousePosition);
 		break;
 	}

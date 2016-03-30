@@ -11,8 +11,6 @@ DWORD fdwSaveOldMode;
 
 void ErrorExit(LPSTR);
 
-void MouseEventProc(MOUSE_EVENT_RECORD mer, RadioMaster *master);
-void ResizeEventProc(WINDOW_BUFFER_SIZE_RECORD);
 
 int main(void) {
 
@@ -50,26 +48,13 @@ int main(void) {
 			switch (irInBuf[i].EventType)
 			{
 			case KEY_EVENT: // keyboard input 
-				if (irInBuf[i].Event.KeyEvent.bKeyDown) {
-					if (irInBuf[i].Event.KeyEvent.wVirtualKeyCode == VK_UP) {
-						radioMaster->goUp();
-					}
-					if (irInBuf[i].Event.KeyEvent.wVirtualKeyCode == VK_DOWN) {
-						radioMaster->goDown();
-					}
-					if (irInBuf[i].Event.KeyEvent.wVirtualKeyCode == VK_RETURN) {
-						radioMaster->markHovered();
-					}
-				}
+				radioMaster->checkEvetnKey(irInBuf[i]);
 				break;
 
 			case MOUSE_EVENT: // mouse input 
-				MouseEventProc(irInBuf[i].Event.MouseEvent, radioMaster);
+				radioMaster->mouseEventProc(irInBuf[i].Event.MouseEvent);
 				break;
 
-			case WINDOW_BUFFER_SIZE_EVENT: // scrn buf. resizing 
-				ResizeEventProc(irInBuf[i].Event.WindowBufferSizeEvent);
-				break;
 
 			case FOCUS_EVENT:  // disregard focus events 
 
@@ -84,33 +69,7 @@ int main(void) {
 	}
 }
 
-void MouseEventProc(MOUSE_EVENT_RECORD mer, RadioMaster *master) {
-#ifndef MOUSE_HWHEELED
-#define MOUSE_HWHEELED 0x0008
-#endif
-	switch (mer.dwEventFlags) {
 
-	case 0:
-		//Left button press
-		if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED) {
-			SHORT yPosition = mer.dwMousePosition.Y;
-			if (yPosition >= master->getTopY() && yPosition <= master->getBottomY()) {
-				master->markHovered();
-			}
-			//checkClickedPosition(mer.dwMousePosition);
-		}
-		break;
-	case MOUSE_MOVED:
-		//Right button press
-
-		SHORT yPosition = mer.dwMousePosition.Y;
-		if (yPosition >= master->getTopY() && yPosition <= master->getBottomY()) {
-			master->setHoverBackground(yPosition);
-		}
-		//setHover(mer.dwMousePosition);
-		break;
-	}
-}
 
 void ErrorExit(LPSTR lpszMessage)
 {
@@ -123,8 +82,4 @@ void ErrorExit(LPSTR lpszMessage)
 	ExitProcess(0);
 }
 
-void ResizeEventProc(WINDOW_BUFFER_SIZE_RECORD wbsr)
-{
-	printf("Resize event\n");
-	printf("Console screen buffer is %d columns by %d rows.\n", wbsr.dwSize.X, wbsr.dwSize.Y);
-}
+

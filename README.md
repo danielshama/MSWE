@@ -9,3 +9,6 @@ Authors: Mor Kasus, Daniel Shamama, Or Ben David and Noam Roiz.
 
 ---
 [Requirements Table](https://drive.google.com/file/d/0B4pqjmTZCVx3bXRLZnI3OFpNOW8/view?usp=sharing)
+
+---
+[UML Diagrams](https://drive.google.com/file/d/0B4VPM5e1cDjOV2dZQ2oxN0Q5NlU/view?usp=sharing)

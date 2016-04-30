@@ -1,18 +1,16 @@
 #pragma once
 #include <Windows.h>
 #include <stdio.h>
+#include "../IController/IController.h"
 
-class TextBox {
+class TextBox : public IController{
 
 private :
 
-	HANDLE handle;
 	char* textBoxBuf;
-	COORD c;
 	int maxSize, curserPosition;
 	boolean isClicked;
 
-	void createTextBox(int width);
 	void keyEventProc(KEY_EVENT_RECORD ker);
 	void MouseEventProc(MOUSE_EVENT_RECORD mer);
 
@@ -26,8 +24,9 @@ private :
 
 public:
 
-	TextBox(int x, int y, int width);
+	TextBox(short x, short y, int width);
 	~TextBox();
+	void draw();
 	void handleInput(INPUT_RECORD iRecord);
 
 };

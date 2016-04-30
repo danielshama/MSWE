@@ -11,7 +11,10 @@ int main(VOID)
 {
 	DWORD cNumRead, fdwMode, i;
 	INPUT_RECORD irInBuf[128];
+
 	TextBox textBox = TextBox(10, 15, 40);
+	//IController *ic = new TextBox(10, 15, 40);
+	//ic->draw();
 
 	// Get the standard input handle. 
 	hStdin = GetStdHandle(STD_INPUT_HANDLE);

@@ -59,8 +59,9 @@ void RadioMaster::setHoverBackground(SHORT y) {
 		if (radioY == y) {
 			if (!temp->isHovered() && !temp->isChecked()) {
 				temp->setOnBackground();
-				currentY = y;
+				
 			}
+			currentY = y;
 		}
 		else {
 			if (!temp->isChecked() && temp->isHovered()) {
@@ -79,7 +80,10 @@ SHORT RadioMaster::getBottomY() {
 }
 
 void RadioMaster::goUp() {
-	if (currentY == firstY) return;//nowhere to go
+	if (currentY == firstY) {//nowhere to go
+		setHoverBackground(lastY);
+		return;
+	}
 	if (currentY == 0) {
 		setHoverBackground(firstY);
 		return;
@@ -88,12 +92,58 @@ void RadioMaster::goUp() {
 }
 
 void RadioMaster::goDown() {
-	if (currentY == lastY) return;//nowhere to go
+	if (currentY == lastY) {//nowhere to go
+		setHoverBackground(firstY);
+		return;
+	}
 	if (currentY == 0) {
 		setHoverBackground(lastY);
 		return;
 	}
 	setHoverBackground(currentY + 1);
+}
+
+void RadioMaster::checkEvetnKey(INPUT_RECORD &irInBuf) {
+	if (irInBuf.Event.KeyEvent.bKeyDown) {
+		DWORD key = irInBuf.Event.KeyEvent.wVirtualKeyCode;
+		if (key == VK_UP || key == VK_NUMPAD8) {
+			goUp();
+		}
+		if (key == VK_DOWN || key == VK_TAB || key == VK_NUMPAD2) {
+			goDown();
+		}
+		if (key == VK_RETURN) {
+			markHovered();
+		}	
+	}
+}
+
+void RadioMaster::mouseEventProc(MOUSE_EVENT_RECORD &mer) {
+	#ifndef MOUSE_HWHEELED
+	#define MOUSE_HWHEELED 0x0008
+	#endif
+	switch (mer.dwEventFlags) {
+
+	case 0:
+		//Left button press
+		if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED) {
+			SHORT yPosition = mer.dwMousePosition.Y;
+			if (yPosition >= firstY && yPosition <= lastY) {
+				setHoverBackground(yPosition);
+				markHovered();
+			}
+			//checkClickedPosition(mer.dwMousePosition);
+		}
+		break;
+	case MOUSE_MOVED:
+		//Right button press
+
+		SHORT yPosition = mer.dwMousePosition.Y;
+		if (yPosition >= firstY && yPosition <= lastY) {
+			setHoverBackground(yPosition);
+		}
+		break;
+	}
 }
 
 RadioMaster::~RadioMaster()

@@ -15,7 +15,7 @@ CheckList::CheckList(string opts[], int optAmount, short x, short y){
 		items[i].create();
 		isChecked.push_back(0);
 		isClicked.push_back(0);
-	}
+}
 	items[0].click();
 	isClicked[0] = 1;
 }
@@ -36,7 +36,7 @@ void CheckList::handleInput(INPUT_RECORD iRecord) {
 
 	default:
 		break;
-	}
+}
 }
 
 void CheckList::keyEventProc(KEY_EVENT_RECORD ker) {
@@ -71,7 +71,7 @@ void CheckList::keyEventProc(KEY_EVENT_RECORD ker) {
 		}
 	}
 
-}
+	}
 
 void CheckList::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 #ifndef MOUSE_HWHEELED
@@ -85,8 +85,8 @@ void CheckList::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 			if (checkMousePosition(mer.dwMousePosition)) {
 				SHORT yPosition = mer.dwMousePosition.Y;
 				items[yPosition - coord.Y].check();
-			}
 		}
+	}
 		break;
 	case MOUSE_MOVED:
 		if (checkMousePosition(mer.dwMousePosition)) {
@@ -97,7 +97,7 @@ void CheckList::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 			isClicked[clickedItem] = 0;
 			items[yPosition - coord.Y].click();
 			isClicked[yPosition - coord.Y] = 1;
-		}
+}
 		break;
 	}
 }
@@ -119,7 +119,7 @@ int CheckList::whoClicked() {
 		if (isClicked[i]) return i;
 	}
 	return -1;
-}
+	}
 vector<int>  CheckList::whoChecked() {
 	return isChecked;
 }

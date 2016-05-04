@@ -1,22 +1,21 @@
 #pragma once
 #include <Windows.h>
 #include <stdio.h>
-#include<string>
+#include <string>
+#include "../IController/IController.h"
 
-class ComboBox
+class ComboBox : public IController
 {
 
 private:
 
-	HANDLE handle;
-	COORD c;
 	char* choosen;
 	char** list;
 	int listSize, width;
 	bool isOpen;
 
 	//the initial style
-	void init();
+	void draw();
 	//combobox open/close
 	void showOptions();
 	void hideOptions();

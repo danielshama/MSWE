@@ -15,12 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="IController.h">
+    <ClInclude Include="TextBoxController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="TextBoxController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

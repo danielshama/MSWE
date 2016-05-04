@@ -1,34 +1,48 @@
 #include "RadioMaster.h"
 
 
-RadioMaster::RadioMaster(string options[], int size)
-{
+RadioMaster::RadioMaster(vector<string> options) : 
+	IController(0,0){
+	size = (int) options.size();
 	if (size < 2) {
 		cout << "not enough options" << endl;
 		exit(1);
 	}
-
 	cout << endl;//going row down, just in case...
+	itemOptions = options;
+}
 
-	GetConsoleScreenBufferInfo(out, &csbiInfo);
+void RadioMaster::draw() {
+	GetConsoleScreenBufferInfo(handle, &csbiInfo);
 
 	firstY = csbiInfo.dwCursorPosition.Y;
 	noBackground = csbiInfo.wAttributes;
 	backgroundOn = BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED;
 
 	for (int i = 0; i < size; i++) {
-		addRadioBox(options[i]);
+		addRadioBox(itemOptions[i]);
 	}
 	this->size = boxes.size();
-	GetConsoleScreenBufferInfo(out, &csbiInfo);
+	GetConsoleScreenBufferInfo(handle, &csbiInfo);
 	lastY = csbiInfo.dwCursorPosition.Y - 1;
 
 	noVisibleCursor = { 100, FALSE };
-	SetConsoleCursorInfo(out, &noVisibleCursor);
-
+	SetConsoleCursorInfo(handle, &noVisibleCursor);
 }
 
+void RadioMaster::handleInput(INPUT_RECORD ir)
+{
+	switch (ir.EventType)
+	{
+	case KEY_EVENT: // keyboard input 
+		checkEvetnKey(ir);
+		break;
 
+	case MOUSE_EVENT: // mouse input 
+		mouseEventProc(ir.Event.MouseEvent);
+		break;
+	}
+}
 
 void RadioMaster::addRadioBox(string option) {
 	RadioBox *temp = new RadioBox(option, noBackground, backgroundOn);
@@ -37,7 +51,6 @@ void RadioMaster::addRadioBox(string option) {
 		exit(1);
 	}
 	boxes.push_back(temp);
-
 }
 
 void RadioMaster::markHovered() {
@@ -148,7 +161,7 @@ void RadioMaster::mouseEventProc(MOUSE_EVENT_RECORD &mer) {
 
 RadioMaster::~RadioMaster()
 {
-	int size = boxes.size();
+	int size = (int) boxes.size();
 	for (int i = 0; i < size; i++) {
 		free(boxes.at(i));
 	}

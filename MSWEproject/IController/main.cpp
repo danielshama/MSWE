@@ -1,8 +1,5 @@
-﻿
-
-#include <windows.h>
+/*#include <windows.h>
 #include <stdio.h>
-#include "TextBox.h"
 
 HANDLE hStdin;
 DWORD fdwSaveOldMode;
@@ -62,3 +59,4 @@ VOID ErrorExit(LPSTR lpszMessage) {
 	SetConsoleMode(hStdin, fdwSaveOldMode);
 	ExitProcess(0);
 }
+*/

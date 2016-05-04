@@ -5,14 +5,16 @@ int coloredLine;
 int backgroundLine;
 DWORD regularAttr;
 
-ComboBox::ComboBox(int x, int y, char* options[], int size) {
-	handle = GetStdHandle(STD_OUTPUT_HANDLE);
+ComboBox::ComboBox(int x, int y, char* options[], int size) :
+	IController(x, y) {
+
+	//handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	//defualt text width
 	width = 15;
 	coloredLine = -1;
 	backgroundLine = -1;
 	//set in the request position
-	c = { (short)x, (short)y };
+	//c = { (short)x, (short)y };
 
 	//cursor size
 	CONSOLE_CURSOR_INFO cci = { 100, FALSE };
@@ -29,7 +31,6 @@ ComboBox::ComboBox(int x, int y, char* options[], int size) {
 	}
 	//init parameters
 	isOpen = false;
-	init();
 }
 
 
@@ -42,7 +43,7 @@ ComboBox::~ComboBox() {
 	}
 }
 
-void ComboBox::init() {
+void ComboBox::draw() {
 
 	int i, j;
 	boolean endFlag;

@@ -1,11 +1,18 @@
 #pragma once
+
+#ifdef MATHFUNCSDLL_EXPORTS
+#define MATHFUNCSDLL_API __declspec(dllexport) 
+#else
+#define MATHFUNCSDLL_API __declspec(dllimport) 
+#endif
+
 #include <Windows.h>
 #include <stdio.h>
 #include "../IController/IController.h"
 
-class TextBox : public IController {
+class TextBoxController : public IController {
 
-private :
+private:
 
 	char* textBoxBuf;
 	int maxSize, curserPosition;
@@ -30,4 +37,6 @@ public:
 	void handleInput(INPUT_RECORD iRecord);
 
 };
+
+
 

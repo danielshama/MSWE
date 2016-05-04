@@ -14,5 +14,6 @@ public:
 	Label(short x, short y, string str);
 	~Label() {};
 	void draw();
+	void handleInput(INPUT_RECORD) {};
 };
 

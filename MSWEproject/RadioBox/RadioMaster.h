@@ -33,6 +33,8 @@ public:
 	void markHovered();
 	SHORT getTopY();
 	SHORT getBottomY();
+	void checkEvetnKey(INPUT_RECORD &irInBuf);
+	void mouseEventProc(MOUSE_EVENT_RECORD &mer);
 
 	~RadioMaster();
 };

@@ -1,20 +1,19 @@
 #pragma once
 #include "RadioBox.h"
 #include <vector>
-
-
-
+#include "../IController/IController.h"
+#include <iostream>
 using namespace std;
 
 
-class RadioMaster
+class RadioMaster : public IController
 {
 private:
+	//HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	int size;
 	SHORT firstY, lastY, currentY = 0;
 	vector <RadioBox *> boxes;
-	HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
-	HANDLE in = GetStdHandle(STD_INPUT_HANDLE);
+	vector<string> itemOptions;
 
 	CONSOLE_CURSOR_INFO noVisibleCursor;
 
@@ -25,7 +24,9 @@ private:
 
 
 public:
-	RadioMaster(string options[], int size);
+	RadioMaster(vector<string> options);
+	void draw();
+	void handleInput(INPUT_RECORD ir);
 	void addRadioBox(string option);
 	void setHoverBackground(SHORT y);
 	void goUp();

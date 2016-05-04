@@ -1,11 +1,12 @@
 #include "TextBox.h"
 
 
-TextBox::TextBox(int x, int y, int width) {
+TextBox::TextBox(short x, short y, int width) :
+	IController(x, y) {
 
 	int i;
-	handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	c = { (short)x, (short)y };
+	//handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	//c = { (short)x, (short)y };
 	curserPosition = 0;
 	textBoxBuf = new char[width];
 	for (i = 0; i < width; i++) {
@@ -13,10 +14,10 @@ TextBox::TextBox(int x, int y, int width) {
 	}
 	maxSize = width;
 	isClicked = true;
-	createTextBox(width);
+	draw();
 }
 
-void TextBox::createTextBox(int width) {
+void TextBox::draw() {
 
 	int i;
 	SetConsoleCursorPosition(handle, c);
@@ -24,7 +25,7 @@ void TextBox::createTextBox(int width) {
 	GetConsoleScreenBufferInfo(handle, &cbi);
 	DWORD wAttr = BACKGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
 	SetConsoleTextAttribute(handle, wAttr);
-	for (i = 0; i < width; i++) {
+	for (i = 0; i < maxSize; i++) {
 		printf("%c", textBoxBuf[i]);
 	}
 }
@@ -49,9 +50,9 @@ void TextBox::handleInput(INPUT_RECORD iRecord) {
 }
 
 void TextBox::keyEventProc(KEY_EVENT_RECORD ker) {
+
 	if (!isClicked) return;
 	if (ker.bKeyDown) {
-
 		//RIGHT key pressed
 		if (ker.wVirtualKeyCode == VK_RIGHT) {
 			moveRight();

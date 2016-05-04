@@ -3,21 +3,17 @@
 #include <Windows.h>
 #include <string>
 #include <iostream>
+#include "../IController/IController.h"
 
 using namespace std;
-class Label
-{
+class Label : public IController{
 
 private:
-	HANDLE handle;
-	COORD c;
 	string labelStr;
-
 public:
-	Label(int x, int y, string str);
-	Label(string str);
-	~Label();
-	void create();
-	void create(COORD coord);
+	Label(short x, short y, string str);
+	~Label() {};
+	void draw();
+	void handleInput(INPUT_RECORD) {};
 };
 

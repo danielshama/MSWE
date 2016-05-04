@@ -13,11 +13,12 @@ VOID ErrorExit(LPSTR);
 int main(VOID)
 {
 
-
 	DWORD cNumRead, fdwMode, i;
 	INPUT_RECORD irInBuf[128];
 	string items[] = { "Daniel", "Or", "Mor", "Noam" };
-	CheckList cl = CheckList(items, 4, 10, 10);
+	//CheckList cl = CheckList(items, 4, 10, 10);
+	IController *cl = new CheckList(items, 4, 10, 10);
+	cl->draw();
 
 	int counter = 0;
 
@@ -49,7 +50,7 @@ int main(VOID)
 		// Dispatch the events to the appropriate handler. 
 		for (i = 0; i < cNumRead; i++) {
 			//Send the input record to the textbox handler
-			cl.handleInput(irInBuf[i]);
+			cl->handleInput(irInBuf[i]);
 		}
 	}
 

@@ -20,15 +20,18 @@ int main(void) {
 
 	DWORD cNumRead;
 
-	string *options = new string[4];
-	options[0] = "This is the first option";
-	options[1] = "This is the second option";
-	options[2] = "This is the third option";
-	options[3] = "This is the fourth option";
+	vector<string> itemsOptions = vector<string>({ "This is the first option", 
+		"This is the second option", 
+		"This is the third option",
+		"This is the fourth option"});
 
+	//RadioMaster *radioMaster = new RadioMaster(options, 4);
+	//RadioMaster *radioMaster = new RadioMaster(itemsOptions);
+	//radioMaster->draw();
 
+	IController *radioMaster = new RadioMaster(itemsOptions);
+	radioMaster->draw();
 
-	RadioMaster *radioMaster = new RadioMaster(options, 4);
 
 	while (1)
 	{
@@ -44,28 +47,7 @@ int main(void) {
 		// Dispatch the events to the appropriate handler. 
 
 		for (int i = 0; i < cNumRead; i++)
-		{
-			switch (irInBuf[i].EventType)
-			{
-			case KEY_EVENT: // keyboard input 
-				radioMaster->checkEvetnKey(irInBuf[i]);
-				break;
-
-			case MOUSE_EVENT: // mouse input 
-				radioMaster->mouseEventProc(irInBuf[i].Event.MouseEvent);
-				break;
-
-
-			case FOCUS_EVENT:  // disregard focus events 
-
-			case MENU_EVENT:   // disregard menu events 
-				break;
-
-			default:
-				ErrorExit("Unknown event type");
-				break;
-			}
-		}
+			radioMaster->handleInput(irInBuf[i]);
 	}
 }
 

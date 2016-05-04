@@ -2,17 +2,18 @@
 #include <iostream>
 #include "ItemList.h"
 #include <vector>
+#include "../IController/IController.h"
 using namespace std;
 
 #pragma once
-class CheckList
+class CheckList : public IController
 {
 private:
 	int amount;
-	COORD coord;
+	//COORD c;
 	string * options;
 	int width;
-	HANDLE handler;
+	//HANDLE handle;
 	boolean ifClicked;
 	vector<ItemList> items;
 	vector<int> isChecked;
@@ -24,6 +25,7 @@ public:
 	void handleInput(INPUT_RECORD iRecord);
 	void keyEventProc(KEY_EVENT_RECORD ker);
 	void MouseEventProc(MOUSE_EVENT_RECORD mer);
+	void draw();
 	vector<int> whoChecked();
 
 	~CheckList();

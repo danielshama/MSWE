@@ -1,13 +1,17 @@
 #include "CheckList.h"
 
-CheckList::CheckList(string opts[], int optAmount, short x, short y){
+CheckList::CheckList(string opts[], int optAmount, short x, short y):
+	IController(x, y) {
+
 	amount = optAmount;
-	coord = { x, y };
+	//coord = { x, y };
 	ifClicked = true;
 	options = opts;
-	handler = GetStdHandle(STD_OUTPUT_HANDLE);
+	//handler = GetStdHandle(STD_OUTPUT_HANDLE);
+	
+	/*
 	CONSOLE_CURSOR_INFO cci = { 100, FALSE };
-	SetConsoleCursorInfo(handler, &cci);
+	SetConsoleCursorInfo(handle, &cci);
 	width = 0;
 	for (int i = 0; i < amount; i++) {
 		if (width < opts[i].length()) width = opts[i].length();
@@ -15,15 +19,31 @@ CheckList::CheckList(string opts[], int optAmount, short x, short y){
 		items[i].create();
 		isChecked.push_back(0);
 		isClicked.push_back(0);
-}
+	}
 	items[0].click();
 	isClicked[0] = 1;
+	*/
+}
+
+void CheckList::draw() {
+	CONSOLE_CURSOR_INFO cci = { 100, FALSE };
+	SetConsoleCursorInfo(handle, &cci);
+	width = 0;
+	for (int i = 0; i < amount; i++) {
+		if (width < options[i].length()) width = options[i].length();
+		items.push_back(ItemList(c.X, c.Y + i, options[i]));
+		items[i].create();
+		isChecked.push_back(0);
+		isClicked.push_back(0);
+		items[0].click();
+		isClicked[0] = 1;
+	}
 }
 
 void CheckList::handleInput(INPUT_RECORD iRecord) {
 
 	if (!ifClicked) return;
-	handler = GetStdHandle(STD_OUTPUT_HANDLE);
+	handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	switch (iRecord.EventType)
 	{
 	case KEY_EVENT: // keyboard input 
@@ -41,7 +61,7 @@ void CheckList::handleInput(INPUT_RECORD iRecord) {
 
 void CheckList::keyEventProc(KEY_EVENT_RECORD ker) {
 	CONSOLE_SCREEN_BUFFER_INFO ct;
-	if (!GetConsoleScreenBufferInfo(handler, &ct))
+	if (!GetConsoleScreenBufferInfo(handle, &ct))
 	{
 		cout << "GetConsoleScreenBufferInfo failed" << GetLastError << endl;
 		return;
@@ -84,7 +104,7 @@ void CheckList::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 		if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED) {
 			if (checkMousePosition(mer.dwMousePosition)) {
 				SHORT yPosition = mer.dwMousePosition.Y;
-				items[yPosition - coord.Y].check();
+				items[yPosition - c.Y].check();
 		}
 	}
 		break;
@@ -95,18 +115,18 @@ void CheckList::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 			SHORT yPosition = mer.dwMousePosition.Y;
 			items[clickedItem].unclick();
 			isClicked[clickedItem] = 0;
-			items[yPosition - coord.Y].click();
-			isClicked[yPosition - coord.Y] = 1;
+			items[yPosition - c.Y].click();
+			isClicked[yPosition - c.Y] = 1;
 }
 		break;
 	}
 }
 
 boolean CheckList::checkMousePosition(COORD dwMousePosition) {
-	if (dwMousePosition.X >= coord.X &&
-		dwMousePosition.X <= (coord.X + width) &&
-		dwMousePosition.Y >= coord.Y &&
-		dwMousePosition.Y <= coord.Y + amount-1) {
+	if (dwMousePosition.X >= c.X &&
+		dwMousePosition.X <= (c.X + width) &&
+		dwMousePosition.Y >= c.Y &&
+		dwMousePosition.Y <= c.Y + amount-1) {
 		return true;
 	}
 	else {

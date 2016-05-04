@@ -1,8 +1,9 @@
-﻿
+
 
 #include <windows.h>
 #include <stdio.h>
-#include "TextBox.h"
+#include "../TextBox/TextBox.h"
+#include "../RadioBox/RadioMaster.h"
 
 HANDLE hStdin;
 DWORD fdwSaveOldMode;
@@ -17,6 +18,13 @@ int main(VOID)
 	//TextBox textBox = TextBox(10, 15, 40);
 	IController *textBox = new TextBox(10, 15, 40);
 	textBox->draw();
+	vector<string> itemsOptions = 
+		vector<string>({ "This is the first option",
+		"This is the second option",
+		"This is the third option",
+		"This is the fourth option" });
+	IController *radioMaster = new RadioMaster(itemsOptions);
+	radioMaster->draw();
 
 	// Get the standard input handle. 
 	hStdin = GetStdHandle(STD_INPUT_HANDLE);

@@ -49,9 +49,9 @@ void TextBox::handleInput(INPUT_RECORD iRecord) {
 }
 
 void TextBox::keyEventProc(KEY_EVENT_RECORD ker) {
+
 	if (!isClicked) return;
 	if (ker.bKeyDown) {
-
 		//RIGHT key pressed
 		if (ker.wVirtualKeyCode == VK_RIGHT) {
 			moveRight();

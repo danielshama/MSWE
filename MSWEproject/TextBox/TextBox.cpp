@@ -1,9 +1,10 @@
 #include "TextBox.h"
 
 
-TextBox::TextBox(short x, short y, int width) :
-	IController(x, y) {
-
+TextBox::TextBox(int width) :
+	IController(width) {
+	loc.height = 1;
+	isFocusable = true;
 	int i;
 	//handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	//c = { (short)x, (short)y };
@@ -14,7 +15,7 @@ TextBox::TextBox(short x, short y, int width) :
 	}
 	maxSize = width;
 	isClicked = true;
-	draw();
+	//draw();
 }
 
 void TextBox::draw() {

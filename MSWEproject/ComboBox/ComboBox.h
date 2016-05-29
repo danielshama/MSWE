@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <stdio.h>
 #include <string>
+#include <vector>
 #include "../IController/IController.h"
 
 class ComboBox : public IController
@@ -9,8 +10,10 @@ class ComboBox : public IController
 
 private:
 
-	char* choosen;
-	char** list;
+	//char* choosen;
+	string choosen;
+	vector<string> list;
+	//char** list;
 	int listSize, width;
 	bool isOpen;
 
@@ -35,6 +38,9 @@ private:
 public:
 
 	//ctor / dtor
+	ComboBox(int width, vector<string> entries);
+	size_t GetSelectedIndex();
+	void SetSelectedIndex(size_t index);
 	ComboBox(int x, int y, char* options[], int size);
 	~ComboBox();
 	//input handle

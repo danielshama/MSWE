@@ -1,9 +1,8 @@
 #include "Label.h"
 
-Label::Label(short x, short y, string str) : 
-		IController(x, y) {
-	labelStr = str;
-	//create();
+Label::Label(int width) : 
+	IController(width) {
+	loc.height = 1;
 }
 
 
@@ -20,3 +19,7 @@ void Label::draw() {
 	//print the label
 	cout << labelStr;
  }
+
+void Label::setText(string value) {
+	labelStr = value;
+}

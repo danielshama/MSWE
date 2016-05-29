@@ -24,10 +24,10 @@ private :
 
 public:
 
+	TextBox(int width);
 	TextBox(short x, short y, int width);
 	~TextBox();
 	void draw();
 	void handleInput(INPUT_RECORD iRecord);
-
 };
 

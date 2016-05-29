@@ -11,10 +11,13 @@ int main(VOID)
 {
 	DWORD cNumRead, fdwMode, i;
 	INPUT_RECORD irInBuf[128];
-	char* arr[] = { "item1", "item2", "item3", "item4" };
+	//char* arr[] = { "item1", "item2", "item3", "item4" };
+	vector<string> vec = { "item1", "item2", "item3", "item4" };
+
+
 	//ComboBox comboBox = ComboBox(7, 7, arr, 4);
 	//comboBox.draw();
-	IController *newController = new ComboBox(7, 7, arr, 4);
+	IController *newController = new ComboBox(20, vec);
 	newController->draw();
 
 	// Get the standard input handle. 

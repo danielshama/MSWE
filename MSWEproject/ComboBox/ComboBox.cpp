@@ -5,8 +5,27 @@ int coloredLine;
 int backgroundLine;
 DWORD regularAttr;
 
+ComboBox::ComboBox(int width, vector<string> entries) :
+IController(width) {
+
+	loc.height = 2 + 2 * (int)entries.size();
+	//handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	//defualt text width
+	width = width;
+	coloredLine = -1;
+	backgroundLine = -1;
+	choosen = entries[0];
+	//cursor size
+	CONSOLE_CURSOR_INFO cci = { 100, FALSE };
+	SetConsoleCursorInfo(handle, &cci);
+	
+	list = entries;
+	//init parameters
+	isOpen = false;
+}
+/*
 ComboBox::ComboBox(int x, int y, char* options[], int size) :
-	IController(x, y) {
+	IController(width) {
 
 	//handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	//defualt text width
@@ -31,17 +50,10 @@ ComboBox::ComboBox(int x, int y, char* options[], int size) :
 	}
 	//init parameters
 	isOpen = false;
-}
+}*/
 
 
-ComboBox::~ComboBox() {
-	//free allocation
-	free(choosen);
-	int i;
-	for (i = 0; i < listSize; i++) {
-		free(list[i]);
-	}
-}
+ComboBox::~ComboBox() {}
 
 void ComboBox::draw() {
 
@@ -56,10 +68,7 @@ void ComboBox::draw() {
 	regularAttr = cbi.wAttributes;
 	DWORD wAttr2 = cbi.wAttributes | BACKGROUND_BLUE;
 	SetConsoleTextAttribute(handle, wAttr2);
-	for (i = 0; i < width - 1; i++) {
-		choosen[i] = ' ';
-		printf("%c", choosen[i]);
-	}
+	printf("%s", choosen);
 	wAttr2 = cbi.wAttributes | BACKGROUND_RED;
 	SetConsoleTextAttribute(handle, wAttr2);
 	choosen[width] = '>';

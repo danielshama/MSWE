@@ -18,6 +18,9 @@ public:
 	int GetValue();
 	bool SetValue(int value);
 
+	void setMin(int min);
+	void setMax(int max);
+
 	//events handlers
 	void MouseEventProc(MOUSE_EVENT_RECORD mer);
 	void checkClickedPosition(COORD dwMousePosition);

@@ -14,6 +14,9 @@ int main(VOID)
 	IController *newController = new NumericBox(20, 10, 50);
 	newController->draw();
 
+	((NumericBox*)newController)->SetValue(45);
+	int val = ((NumericBox*)newController)->GetValue();
+
 	// Get the standard input handle. 
 	hStdin = GetStdHandle(STD_INPUT_HANDLE);
 	if (hStdin == INVALID_HANDLE_VALUE)

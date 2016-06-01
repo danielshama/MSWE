@@ -72,3 +72,26 @@ void NumericBox::changeValue(int add) {
 	value += add;
 	draw();
 }
+
+int NumericBox::GetValue() {
+	return value;
+}
+
+bool NumericBox::SetValue(int val) {
+	if (val < min || val > max) return false;
+	value = val;
+	draw();
+	return true;
+}
+
+void NumericBox::setMin(int m){
+	min = m; 
+	value = min;
+	draw();
+}
+
+void NumericBox::setMax(int m){
+	max = max;
+	value = min;
+	draw();
+}

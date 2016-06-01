@@ -6,51 +6,26 @@ int backgroundLine;
 DWORD regularAttr;
 
 ComboBox::ComboBox(int width, vector<string> entries) :
-IController(width) {
-
+	IController(width) {
+	loc.x = 10;
+	loc.y = 10;
 	loc.height = 2 + 2 * (int)entries.size();
-	//handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	//defualt text width
-	width = width;
+
 	coloredLine = -1;
 	backgroundLine = -1;
 	choosen = entries[0];
 	//cursor size
 	CONSOLE_CURSOR_INFO cci = { 100, FALSE };
 	SetConsoleCursorInfo(handle, &cci);
-	
+	CONSOLE_SCREEN_BUFFER_INFO cbi;
+	GetConsoleScreenBufferInfo(handle, &cbi);
+	regularAttr = cbi.wAttributes;
 	list = entries;
+
 	//init parameters
+	listItemOn = 0;
 	isOpen = false;
 }
-/*
-ComboBox::ComboBox(int x, int y, char* options[], int size) :
-	IController(width) {
-
-	//handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	//defualt text width
-	width = 15;
-	coloredLine = -1;
-	backgroundLine = -1;
-	//set in the request position
-	//c = { (short)x, (short)y };
-
-	//cursor size
-	CONSOLE_CURSOR_INFO cci = { 100, FALSE };
-	SetConsoleCursorInfo(handle, &cci);
-
-	//dynamic allocations
-	choosen = (char*)calloc(width, sizeof(char));
-	listSize = size;
-	list = (char**)calloc(size, sizeof(char*));
-	int i;
-	for (i = 0; i < size; i++) {
-		list[i] = (char*)calloc(width, sizeof(char));
-		strcpy_s(list[i], width, options[i]);
-	}
-	//init parameters
-	isOpen = false;
-}*/
 
 
 ComboBox::~ComboBox() {}
@@ -63,35 +38,31 @@ void ComboBox::draw() {
 	//initialize the top box 
 	SetConsoleCursorPosition(handle, c);
 
+	printChoosen();
+}
+
+void ComboBox::printChoosen() {
+	COORD newCoord = {loc.x, loc.y};
+	SetConsoleCursorPosition(handle, newCoord);
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	GetConsoleScreenBufferInfo(handle, &cbi);
-	regularAttr = cbi.wAttributes;
 	DWORD wAttr2 = cbi.wAttributes | BACKGROUND_BLUE;
 	SetConsoleTextAttribute(handle, wAttr2);
-	printf("%s", choosen);
+	string stringToPrint = choosen + " ";
+	for (int i = 0; i < loc.width - choosen.length(); i++) {
+		stringToPrint += " ";
+	}
+	cout << stringToPrint;
 	wAttr2 = cbi.wAttributes | BACKGROUND_RED;
 	SetConsoleTextAttribute(handle, wAttr2);
-	choosen[width] = '>';
-	printf("%c", choosen[width]);
-
-	//set char ' ' for the printing(on the rest of the options)
-	for (i = 0; i < listSize; i++) {
-		endFlag = false;
-		for (j = 0; j < width; j++) {
-			if (list[i][j] == '\0' || endFlag == true) {
-				list[i][j] = ' ';
-				endFlag = true;
-			}
-		}
-		endFlag = false;
-	}
+	cout << "+";
 }
 
 
 //show the options - printing them in the correct position
 void ComboBox::showOptions() {
 	int i;
-	for (i = 0; i < listSize; i++) {
+	for (i = 0; i < list.size(); i++) {
 		printDelimiter(i * 2 + 1);
 		printOption(i * 2 + 2, i);
 	}
@@ -101,7 +72,7 @@ void ComboBox::showOptions() {
 //hide the options - printing ' ' in the correct position
 void ComboBox::hideOptions() {
 	int i;
-	for (i = 1; i <= 2 * listSize + 1; i++) {
+	for (i = 1; i <= 2 * list.size() + 1; i++) {
 		printSpace(i);
 	}
 }
@@ -109,55 +80,51 @@ void ComboBox::hideOptions() {
 //printing the requested option to the top box
 void ComboBox::chooseOption(int position, int lastColoredLine) {
 	int listNum = position / 2 - 1 , i;
-	SetConsoleCursorPosition(handle, c);
+	SetConsoleCursorPosition(handle, { loc.x, loc.y });
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	GetConsoleScreenBufferInfo(handle, &cbi);
 	DWORD wAttr2 = cbi.wAttributes | BACKGROUND_BLUE;
 	SetConsoleTextAttribute(handle, wAttr2);
-	for (i = 0; i < width - 1; i++) {
-		choosen[i] = list[listNum][i];
-		printf("%c", choosen[i]);
-	}
-	setSelected(lastColoredLine);
-}
-
-void ComboBox::setSelected(int lastColoredLine) {
-	printOption(lastColoredLine * 2 + 2, lastColoredLine);
-	printOption(coloredLine * 2 + 2, coloredLine);
+	choosen = list[listNum];
+	printChoosen(); 
+	SetSelectedIndex(lastColoredLine);
 }
 
 //print delimiter '-' all over the requested line (separate each option)
 void ComboBox::printDelimiter(int position) {
-	COORD newCoord = { c.X, c.Y + (short)position };
+	COORD newCoord = { loc.x, loc.y + (short)position };
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	int i;
 
 	SetConsoleCursorPosition(handle, newCoord);
 	GetConsoleScreenBufferInfo(handle, &cbi);
 	SetConsoleTextAttribute(handle, regularAttr);
-	for (i = 0; i < width; i++) {
+	for (i = 0; i < loc.width; i++) {
 		printf("-");
 	}
 }
 
 //print the option
 void ComboBox::printOption(int position, int itemNum) {
-	COORD newCoord = { c.X, c.Y + (short)position };
+	COORD newCoord = { loc.x, loc.y + (short)position };
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	int i;
 
 	SetConsoleCursorPosition(handle, newCoord);
 	GetConsoleScreenBufferInfo(handle, &cbi);
 	SetConsoleTextAttribute(handle, regularAttr);
-	for (i = 0; i < width; i++) {
-		printf("%c", list[itemNum][i]);
+	string item = list[itemNum];
+	for (i = 0; i < loc.width - item.length(); i++) {
+		item += " ";
 	}
+	cout << item;
 }
 
 void ComboBox::printOptionHoverd(int position, int lastBackgroundLine) {
+	listItemOn = backgroundLine;
 	int lastPos = lastBackgroundLine * 2 + 2, i;
-	COORD newCoord = { c.X, c.Y + (short)position };
-	COORD lastCoord = { c.X, c.Y + (short)lastPos };
+	COORD newCoord = { loc.x, loc.y + (short)position };
+	COORD lastCoord = { loc.x, loc.y + (short)lastPos };
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	DWORD wAttr = BACKGROUND_INTENSITY;
 
@@ -169,32 +136,42 @@ void ComboBox::printOptionHoverd(int position, int lastBackgroundLine) {
 	else {
 		SetConsoleTextAttribute(handle, wAttr);
 		//set hover on the new position
-		for (i = 0; i < width; i++) {
-			printf("%c", list[backgroundLine][i]);
+		string item = list[backgroundLine];
+		for (i = 0; i < loc.width - item.length(); i++) {
+			item += " ";
 		}
+		cout << item;
 		//if (lastPos == 0) return;
 		SetConsoleCursorPosition(handle, lastCoord);
 		SetConsoleTextAttribute(handle, regularAttr);
 		//set non hover on the last position
-		for (i = 0; i < width; i++) {
-			printf("%c", list[lastBackgroundLine][i]);
+		item = list[lastBackgroundLine];
+		for (i = 0; i < loc.width - item.length(); i++) {
+			item += " ";
 		}
+		cout << item;
 	}
 }
 
 //print ' ' (space) for the hiding functioallity
 void ComboBox::printSpace(int position) {
 
-	COORD newCoord = { c.X, c.Y + (short)position };
+	COORD newCoord = { loc.x, loc.y + (short)position };
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	int i;
 
 	SetConsoleCursorPosition(handle, newCoord);
 	GetConsoleScreenBufferInfo(handle, &cbi);
 	SetConsoleTextAttribute(handle, regularAttr);
-	for (i = 0; i < width; i++) {
+	for (i = 0; i < loc.width; i++) {
 		printf(" ");
 	}
+}
+
+void ComboBox::checkKey(int listItem) {
+	if (listItem < 0) listItem = list.size()-1;
+	if (listItem == list.size()) listItem = 0;
+	setHover({ loc.x+2, loc.y + listItem * 2 + 2 });
 }
 
 //listening for any mouse click and handle if relevnt
@@ -205,9 +182,51 @@ void ComboBox::handleInput(INPUT_RECORD iRecord) {
 	case MOUSE_EVENT: // mouse input 
 		MouseEventProc(iRecord.Event.MouseEvent);
 		break;
+	
+	case KEY_EVENT: // keyboard input 
+		keyEventProc(iRecord.Event.KeyEvent);
+		break;
 
 	default:
 		break;
+	}
+}
+
+void ComboBox::keyEventProc(KEY_EVENT_RECORD ker) {
+
+	if (!isOpen || !isFocus) return;
+	if (ker.bKeyDown) {
+		//up key pressed
+		if (ker.wVirtualKeyCode == VK_UP) {
+			checkKey(--listItemOn);
+		}
+		//down key pressed
+		else if (ker.wVirtualKeyCode == VK_DOWN) {
+			checkKey(++listItemOn);
+		}
+		//UP numpad key pressed
+		else if (ker.wVirtualKeyCode == VK_NUMPAD8) {
+			checkKey(--listItemOn);
+		}
+		//Down numpad pressed
+		else if (ker.wVirtualKeyCode == VK_NUMPAD2) {
+			checkKey(++listItemOn);
+		}
+		//BACKSPACE key pressed
+		else if (ker.wVirtualKeyCode == VK_RETURN) {
+			int lastColoredLine = coloredLine;
+			coloredLine = listItemOn / 2 - 1;
+			if (lastColoredLine == -1) lastColoredLine = 0;
+			chooseOption(listItemOn * 2 + 2, lastColoredLine);
+			printOption(listItemOn * 2 + 2, listItemOn);
+			hideOptions();
+			isOpen = false;
+		}
+		//TAB key pressed
+		else if (ker.wVirtualKeyCode == VK_TAB) {
+			if (listItemOn == list.size() - 1) isFocus = false;
+			else checkKey(++listItemOn);
+		}
 	}
 }
 
@@ -225,7 +244,7 @@ void ComboBox::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 		break;
 	case MOUSE_MOVED:
 		//Mouse moved
-		if (!isOpen) return;
+		if (!isOpen || !isFocus) return;
 		setHover(mer.dwMousePosition);
 		break;
 	}
@@ -235,9 +254,10 @@ void ComboBox::setHover(COORD dwMousePosition) {
 	int x = dwMousePosition.X, y = dwMousePosition.Y,
 			i, lastBackgroundLine;
 
-	if (x >= c.X + 2 && x <= c.X + 15 && y >= c.Y && y <= c.Y + listSize * 2) {
-		for (i = 2; i <= 2 * listSize; i += 2) {
-			if (dwMousePosition.Y == c.Y + i) {
+	if (x >= loc.x + 2 && x <= loc.x + loc.width && y >= loc.y && y <= loc.y + list.size() * 2) {
+		isFocus = true;
+		for (i = 2; i <= 2 * list.size(); i += 2) {
+			if (dwMousePosition.Y == loc.y + i) {
 				lastBackgroundLine = backgroundLine;
 				backgroundLine = i / 2 - 1;
 				if (lastBackgroundLine == -1) lastBackgroundLine = 0;
@@ -252,7 +272,8 @@ void ComboBox::setHover(COORD dwMousePosition) {
 void ComboBox::checkClickedPosition(COORD dwMousePosition) {
 	int lastColoredLine;
 
-	if (dwMousePosition.X == c.X + width - 1 && dwMousePosition.Y == c.Y) {
+	if (dwMousePosition.X == loc.x + loc.width + 1 && dwMousePosition.Y == loc.y) {
+		isFocus = true;
 		if (isOpen == true) {
 			isOpen = false;
 			hideOptions();
@@ -262,9 +283,10 @@ void ComboBox::checkClickedPosition(COORD dwMousePosition) {
 			showOptions();
 		}
 	}
-	else if (dwMousePosition.X >= c.X && dwMousePosition.X < c.X + width) {
-		for (int i = 2; i <= 2 * listSize; i += 2) {
-			if (dwMousePosition.Y == c.Y + i) {
+	else if (dwMousePosition.X >= loc.x && dwMousePosition.X < loc.x + loc.width) {
+		if (!isOpen) return;
+		for (int i = 2; i <= 2 * list.size(); i += 2) {
+			if (dwMousePosition.Y == loc.y + i) {
 				lastColoredLine = coloredLine;
 				coloredLine = i / 2 - 1;
 				if (lastColoredLine == -1) lastColoredLine = 0;
@@ -272,4 +294,21 @@ void ComboBox::checkClickedPosition(COORD dwMousePosition) {
 			}
 		}
 	}
+	else {
+		isFocus = false;
+	}
+}
+
+void ComboBox::SetSelectedIndex(size_t lastColoredLine) {
+	//printOption(lastColoredLine * 2 + 2, lastColoredLine);
+	//printOption(coloredLine * 2 + 2, coloredLine);
+	hideOptions();
+	isOpen = false;
+}
+
+size_t ComboBox::GetSelectedIndex(){
+	for (int i = 0; i < list.size(); i++) {
+		if (list[i].compare(choosen) == 0) return i;
+	}
+	return -1;
 }

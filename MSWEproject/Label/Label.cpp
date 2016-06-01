@@ -3,6 +3,7 @@
 Label::Label(int width) : 
 	IController(width) {
 	loc.height = 1;
+	isFocusable = false;
 }
 
 

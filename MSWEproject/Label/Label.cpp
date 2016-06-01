@@ -10,7 +10,7 @@ Label::Label(int width) :
 void Label::draw() {
 
 	//change curser position
-	SetConsoleCursorPosition(handle, c);
+	SetConsoleCursorPosition(handle, { loc.x, loc.y });
 	//foreground color
 	DWORD wAttr = FOREGROUND_GREEN | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
 	SetConsoleTextAttribute(handle, wAttr);

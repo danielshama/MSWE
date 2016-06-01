@@ -1,9 +1,5 @@
-
-
-#include <windows.h>
 #include <stdio.h>
-#include "../TextBox/TextBox.h"
-#include "../RadioBox/RadioMaster.h"
+#include "NumericBox.h"
 
 HANDLE hStdin;
 DWORD fdwSaveOldMode;
@@ -15,16 +11,8 @@ int main(VOID)
 	DWORD cNumRead, fdwMode, i;
 	INPUT_RECORD irInBuf[128];
 
-	//TextBox textBox = TextBox(10, 15, 40);
-	IController *textBox = new TextBox(10, 15, 40);
-	textBox->draw();
-	vector<string> itemsOptions = 
-		vector<string>({ "This is the first option",
-		"This is the second option",
-		"This is the third option",
-		"This is the fourth option" });
-	IController *radioMaster = new RadioMaster(itemsOptions);
-	radioMaster->draw();
+	IController *newController = new NumericBox(20, 10, 50);
+	newController->draw();
 
 	// Get the standard input handle. 
 	hStdin = GetStdHandle(STD_INPUT_HANDLE);
@@ -54,7 +42,7 @@ int main(VOID)
 		// Dispatch the events to the appropriate handler. 
 		for (i = 0; i < cNumRead; i++) {
 			//Send the input record to the textbox handler
-			textBox->handleInput(irInBuf[i]);
+			newController->handleInput(irInBuf[i]);
 		}
 	}
 

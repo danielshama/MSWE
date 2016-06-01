@@ -1,30 +1,36 @@
 #include "RadioMaster.h"
 
 
-RadioMaster::RadioMaster(vector<string> options) : 
-	IController(0,0){
+RadioMaster::RadioMaster(int height, int width, vector<string> options) : 
+	IController(width){
+
+	/*
 	size = (int) options.size();
 	if (size < 2) {
 		cout << "not enough options" << endl;
 		exit(1);
-	}
-	cout << endl;//going row down, just in case...
+	}*/
+	loc.width = width;
+	loc.height = height;
+	//cout << endl;//going row down, just in case...
 	itemOptions = options;
+	size = (int)options.size();
 }
 
 void RadioMaster::draw() {
 	GetConsoleScreenBufferInfo(handle, &csbiInfo);
+	SetConsoleCursorPosition(handle, { loc.x, loc.y });
 
-	firstY = csbiInfo.dwCursorPosition.Y;
+	//firstY = csbiInfo.dwCursorPosition.Y;
 	noBackground = csbiInfo.wAttributes;
 	backgroundOn = BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED;
 
 	for (int i = 0; i < size; i++) {
-		addRadioBox(itemOptions[i]);
+		addRadioBox(itemOptions[i], i);
 	}
-	this->size = boxes.size();
+	size = boxes.size();
 	GetConsoleScreenBufferInfo(handle, &csbiInfo);
-	lastY = csbiInfo.dwCursorPosition.Y - 1;
+	//lastY = csbiInfo.dwCursorPosition.Y - 1;
 
 	noVisibleCursor = { 100, FALSE };
 	SetConsoleCursorInfo(handle, &noVisibleCursor);
@@ -44,17 +50,20 @@ void RadioMaster::handleInput(INPUT_RECORD ir)
 	}
 }
 
-void RadioMaster::addRadioBox(string option) {
+void RadioMaster::addRadioBox(string option, int line) {
 	RadioBox *temp = new RadioBox(option, noBackground, backgroundOn);
 	if (temp == NULL) {
 		cout << "failed to create a RadioBox" << endl;
 		exit(1);
 	}
+	
+	temp->setLocation(loc.x, loc.y + line, loc.width, 1);
+	temp->makeRadioButton();
 	boxes.push_back(temp);
 }
 
 void RadioMaster::markHovered() {
-	SHORT needToMark = currentY - firstY;
+	SHORT needToMark = currentY - loc.y;
 	for (int i = 0; i < size; i++) {
 		RadioBox *temp = boxes.at(i);
 		if (i == needToMark) {
@@ -85,34 +94,36 @@ void RadioMaster::setHoverBackground(SHORT y) {
 }
 
 SHORT RadioMaster::getTopY() {
-	return firstY;
+	return loc.y;
 }
 
 SHORT RadioMaster::getBottomY() {
-	return lastY;
+	return loc.y + loc.height - 1;
 }
 
 void RadioMaster::goUp() {
-	if (currentY == firstY) {//nowhere to go
-		setHoverBackground(lastY);
+	if (currentY == loc.y) {//nowhere to go
+		setHoverBackground(loc.y + loc.height - 1);
 		return;
 	}
+
 	if (currentY == 0) {
-		setHoverBackground(firstY);
+		setHoverBackground(loc.y);
 		return;
 	}
 	setHoverBackground(currentY - 1);
 }
 
 void RadioMaster::goDown() {
-	if (currentY == lastY) {//nowhere to go
-		setHoverBackground(firstY);
+	if (currentY == loc.y + loc.height - 1) {//nowhere to go
+		setHoverBackground(loc.y);
 		return;
 	}
+	/*
 	if (currentY == 0) {
-		setHoverBackground(lastY);
+		setHoverBackground(loc.y + loc.height - 1);
 		return;
-	}
+	}*/
 	setHoverBackground(currentY + 1);
 }
 
@@ -130,18 +141,28 @@ void RadioMaster::checkEvetnKey(INPUT_RECORD &irInBuf) {
 		}	
 	}
 }
+/*
+boolean RadioMaster::checkInLimits(MOUSE_EVENT_RECORD &mer) {
+	if (mer.dwMousePosition.X >= loc.x && mer.dwMousePosition.X <= loc.x + loc.width) {
+		if (mer.dwMousePosition.Y >= loc.y && mer.dwMousePosition.Y <= loc.y + loc.height - 1)
+			return true;
+	}
+	return false;
+}*/
 
 void RadioMaster::mouseEventProc(MOUSE_EVENT_RECORD &mer) {
 	#ifndef MOUSE_HWHEELED
 	#define MOUSE_HWHEELED 0x0008
 	#endif
+	
+	if (!checkInLimits(mer)) return;
 	switch (mer.dwEventFlags) {
 
 	case 0:
 		//Left button press
 		if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED) {
 			SHORT yPosition = mer.dwMousePosition.Y;
-			if (yPosition >= firstY && yPosition <= lastY) {
+			if (yPosition >= loc.y && yPosition <= loc.y + loc.height - 1) {
 				setHoverBackground(yPosition);
 				markHovered();
 			}
@@ -152,7 +173,7 @@ void RadioMaster::mouseEventProc(MOUSE_EVENT_RECORD &mer) {
 		//Right button press
 
 		SHORT yPosition = mer.dwMousePosition.Y;
-		if (yPosition >= firstY && yPosition <= lastY) {
+		if (yPosition >= loc.y && yPosition <= loc.y + loc.height - 1) {
 			setHoverBackground(yPosition);
 		}
 		break;

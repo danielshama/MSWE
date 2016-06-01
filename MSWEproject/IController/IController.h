@@ -21,8 +21,8 @@ protected:
 
 public:
 	bool isFocusable;
-
-	IController(int width) : handle(GetStdHandle(STD_OUTPUT_HANDLE)) { loc.width = width; };
+	bool isFocus;
+	IController(int width) : handle(GetStdHandle(STD_OUTPUT_HANDLE)) { loc.width = width; isFocusable = true; isFocus = false; };
 	void setLocation(short x, short y) { c = { x, y }; }
 	virtual void draw() = 0 ;
 	virtual void handleInput(INPUT_RECORD) = 0;
@@ -34,5 +34,10 @@ public:
 	void SetForeground(ForegroundColor color);
 	void SetBackground(BackgroundColor color);
 	void SetBorder(BorderType border);
+	boolean checkInLimits(MOUSE_EVENT_RECORD &mer) {
+		if (mer.dwMousePosition.X >= loc.x && mer.dwMousePosition.X <= loc.x + loc.width) 
+			if (mer.dwMousePosition.Y >= loc.y && mer.dwMousePosition.Y <= loc.y + loc.height - 1) return true;	
+		return false;
+	}
 };
 

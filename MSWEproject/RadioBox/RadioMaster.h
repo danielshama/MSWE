@@ -14,6 +14,7 @@ private:
 	SHORT firstY, lastY, currentY = 0;
 	vector <RadioBox *> boxes;
 	vector<string> itemOptions;
+	bool lastInList = false;
 
 	CONSOLE_CURSOR_INFO noVisibleCursor;
 
@@ -26,7 +27,7 @@ private:
 public:
 	RadioMaster(int height, int width, vector<string> options);
 	void draw();
-	void handleInput(INPUT_RECORD ir);
+	bool handleInput(INPUT_RECORD ir);
 	void addRadioBox(string option, int line);
 	void setHoverBackground(SHORT y);
 	void goUp();
@@ -34,7 +35,7 @@ public:
 	void markHovered();
 	SHORT getTopY();
 	SHORT getBottomY();
-	void checkEvetnKey(INPUT_RECORD &irInBuf);
+	bool checkEventKey(INPUT_RECORD &irInBuf);
 	void mouseEventProc(MOUSE_EVENT_RECORD &mer);
 
 	~RadioMaster();

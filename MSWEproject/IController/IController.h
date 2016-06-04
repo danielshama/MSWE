@@ -3,10 +3,13 @@
 using namespace std;
 
 
-typedef struct {
+typedef struct Location {
 	short x, y;
 	int width, height;
-} location;
+	Location() {}
+	Location(short x, short y, int width, int height) 
+		: x(x), y(y), width(width), height(height){}
+} Location;
 
 enum class ForegroundColor { Red, Blue, Green, Purple, Teal, Yellow, White, Black };
 enum class BackgroundColor { Red, Blue, Green, Purple, Teal, Yellow, White, Black };
@@ -16,20 +19,19 @@ class IController {
 
 protected:
 	HANDLE handle;
-	COORD c;
-	location loc;
+	Location loc;
 
 public:
 	bool isFocusable;
 	bool isFocus;
 	IController(int width) : handle(GetStdHandle(STD_OUTPUT_HANDLE)) { loc.width = width; isFocusable = true; isFocus = false; };
-	void setLocation(short x, short y) { c = { x, y }; }
+	void setLocation(short x, short y) { loc.x = x; loc.y = y; }
 	virtual void draw() = 0 ;
 	virtual bool handleInput(INPUT_RECORD) = 0;
 	~IController() {};
 
 	void SetVisibility(bool visibility);
-	location getLocation() { return loc; }
+	Location getLocation() { return loc; }
 	bool getIsFocusable() { return isFocusable; }
 	void SetForeground(ForegroundColor color);
 	void SetBackground(BackgroundColor color);

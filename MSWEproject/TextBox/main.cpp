@@ -15,7 +15,7 @@ int main(VOID)
 	INPUT_RECORD irInBuf[128];
 
 	//TextBox textBox = TextBox(10, 15, 40);
-	IController *textBox = new TextBox(10, 15, 40);
+	IController *textBox = new TextBox(40);
 	textBox->draw();
 
 	// Get the standard input handle. 

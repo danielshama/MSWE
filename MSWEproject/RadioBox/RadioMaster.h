@@ -24,10 +24,10 @@ private:
 
 
 public:
-	RadioMaster(vector<string> options);
+	RadioMaster(int height, int width, vector<string> options);
 	void draw();
 	void handleInput(INPUT_RECORD ir);
-	void addRadioBox(string option);
+	void addRadioBox(string option, int line);
 	void setHoverBackground(SHORT y);
 	void goUp();
 	void goDown();

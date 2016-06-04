@@ -29,7 +29,7 @@ int main(void) {
 	//RadioMaster *radioMaster = new RadioMaster(itemsOptions);
 	//radioMaster->draw();
 
-	IController *radioMaster = new RadioMaster(itemsOptions);
+	IController *radioMaster = new RadioMaster(itemsOptions.size(), 20, itemsOptions);
 	radioMaster->draw();
 
 

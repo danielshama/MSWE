@@ -1,16 +1,16 @@
 #include "Label.h"
 
-Label::Label(short x, short y, string str) : 
-		IController(x, y) {
-	labelStr = str;
-	//create();
+Label::Label(int width) : 
+	IController(width) {
+	loc.height = 1;
+	isFocusable = false;
 }
 
 
 void Label::draw() {
 
 	//change curser position
-	SetConsoleCursorPosition(handle, c);
+	SetConsoleCursorPosition(handle, { loc.x, loc.y });
 	//foreground color
 	DWORD wAttr = FOREGROUND_GREEN | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
 	SetConsoleTextAttribute(handle, wAttr);
@@ -20,3 +20,7 @@ void Label::draw() {
 	//print the label
 	cout << labelStr;
  }
+
+void Label::setText(string value) {
+	labelStr = value;
+}

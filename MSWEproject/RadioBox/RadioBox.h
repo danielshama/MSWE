@@ -5,17 +5,17 @@
 
 using namespace std;
 
-typedef struct doubleCoord{
-	COORD start;
-	COORD end;
-} doubleCoord;
+typedef struct{
+	short x, y;
+	int width, height;
+} Location;
 
 class RadioBox
 {
 private:
 
-	COORD checkPoint;
-	doubleCoord optionCoords;
+	//COORD checkPoint;
+	Location loc;
 	string option;
 
 	BOOL checked = FALSE;
@@ -40,6 +40,7 @@ public:
 	BOOL isChecked();
 	BOOL isHovered();
 	SHORT getYAxis();
+	void setLocation(short x, short y, int width, int height);
 	~RadioBox();
 };
 

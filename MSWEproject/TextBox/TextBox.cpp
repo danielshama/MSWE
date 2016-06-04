@@ -1,12 +1,11 @@
 #include "TextBox.h"
 
 
-TextBox::TextBox(short x, short y, int width) :
-	IController(x, y) {
-
+TextBox::TextBox(int width) :
+	IController(width) {
+	loc.height = 1;
+	isFocusable = true;
 	int i;
-	//handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	//c = { (short)x, (short)y };
 	curserPosition = 0;
 	textBoxBuf = new char[width];
 	for (i = 0; i < width; i++) {
@@ -14,7 +13,6 @@ TextBox::TextBox(short x, short y, int width) :
 	}
 	maxSize = width;
 	isClicked = true;
-	draw();
 }
 
 void TextBox::draw() {
@@ -31,7 +29,7 @@ void TextBox::draw() {
 }
 
 void TextBox::handleInput(INPUT_RECORD iRecord) {
-
+		
 	handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	changeCurserPosition(curserPosition);
 	switch (iRecord.EventType)

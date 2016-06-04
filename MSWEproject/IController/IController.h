@@ -25,7 +25,7 @@ public:
 	IController(int width) : handle(GetStdHandle(STD_OUTPUT_HANDLE)) { loc.width = width; isFocusable = true; isFocus = false; };
 	void setLocation(short x, short y) { c = { x, y }; }
 	virtual void draw() = 0 ;
-	virtual void handleInput(INPUT_RECORD) = 0;
+	virtual bool handleInput(INPUT_RECORD) = 0;
 	~IController() {};
 
 	void SetVisibility(bool visibility);

@@ -36,16 +36,69 @@ void RadioMaster::draw() {
 	SetConsoleCursorInfo(handle, &noVisibleCursor);
 }
 
-void RadioMaster::handleInput(INPUT_RECORD ir)
+bool RadioMaster::handleInput(INPUT_RECORD ir)
 {
 	switch (ir.EventType)
 	{
 	case KEY_EVENT: // keyboard input 
-		checkEvetnKey(ir);
-		break;
+		return checkEventKey(ir);
+		//break;
 
 	case MOUSE_EVENT: // mouse input 
 		mouseEventProc(ir.Event.MouseEvent);
+		break;
+	}
+}
+
+bool RadioMaster::checkEventKey(INPUT_RECORD &irInBuf) {
+	if (irInBuf.Event.KeyEvent.bKeyDown) {
+		DWORD key = irInBuf.Event.KeyEvent.wVirtualKeyCode;
+		if (key == VK_UP || key == VK_NUMPAD8) {
+			goUp();
+			return true;
+		}
+		if (key == VK_DOWN || key == VK_TAB || key == VK_NUMPAD2) {
+			goDown();
+			return true;
+		}
+		if (key == VK_RETURN) {
+			markHovered();
+			return true;;
+		}
+		if (key == VK_TAB) {
+			if (lastInList) return false;
+			goDown();
+			return true;
+		}
+	}
+}
+
+void RadioMaster::mouseEventProc(MOUSE_EVENT_RECORD &mer) {
+#ifndef MOUSE_HWHEELED
+#define MOUSE_HWHEELED 0x0008
+#endif
+
+	if (!checkInLimits(mer)) return;
+	switch (mer.dwEventFlags) {
+
+	case 0:
+		//Left button press
+		if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED) {
+			SHORT yPosition = mer.dwMousePosition.Y;
+			if (yPosition >= loc.y && yPosition <= loc.y + loc.height - 1) {
+				setHoverBackground(yPosition);
+				markHovered();
+			}
+			//checkClickedPosition(mer.dwMousePosition);
+		}
+		break;
+	case MOUSE_MOVED:
+		//Right button press
+
+		SHORT yPosition = mer.dwMousePosition.Y;
+		if (yPosition >= loc.y && yPosition <= loc.y + loc.height - 1) {
+			setHoverBackground(yPosition);
+		}
 		break;
 	}
 }
@@ -115,7 +168,8 @@ void RadioMaster::goUp() {
 }
 
 void RadioMaster::goDown() {
-	if (currentY == loc.y + loc.height - 1) {//nowhere to go
+	short lastPosition = loc.y + loc.height - 1;
+	if (currentY == lastPosition) {//nowhere to go
 		setHoverBackground(loc.y);
 		return;
 	}
@@ -125,22 +179,10 @@ void RadioMaster::goDown() {
 		return;
 	}*/
 	setHoverBackground(currentY + 1);
+	if (currentY == lastPosition) lastInList = true;
 }
 
-void RadioMaster::checkEvetnKey(INPUT_RECORD &irInBuf) {
-	if (irInBuf.Event.KeyEvent.bKeyDown) {
-		DWORD key = irInBuf.Event.KeyEvent.wVirtualKeyCode;
-		if (key == VK_UP || key == VK_NUMPAD8) {
-			goUp();
-		}
-		if (key == VK_DOWN || key == VK_TAB || key == VK_NUMPAD2) {
-			goDown();
-		}
-		if (key == VK_RETURN) {
-			markHovered();
-		}	
-	}
-}
+
 /*
 boolean RadioMaster::checkInLimits(MOUSE_EVENT_RECORD &mer) {
 	if (mer.dwMousePosition.X >= loc.x && mer.dwMousePosition.X <= loc.x + loc.width) {
@@ -150,35 +192,7 @@ boolean RadioMaster::checkInLimits(MOUSE_EVENT_RECORD &mer) {
 	return false;
 }*/
 
-void RadioMaster::mouseEventProc(MOUSE_EVENT_RECORD &mer) {
-	#ifndef MOUSE_HWHEELED
-	#define MOUSE_HWHEELED 0x0008
-	#endif
-	
-	if (!checkInLimits(mer)) return;
-	switch (mer.dwEventFlags) {
 
-	case 0:
-		//Left button press
-		if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED) {
-			SHORT yPosition = mer.dwMousePosition.Y;
-			if (yPosition >= loc.y && yPosition <= loc.y + loc.height - 1) {
-				setHoverBackground(yPosition);
-				markHovered();
-			}
-			//checkClickedPosition(mer.dwMousePosition);
-		}
-		break;
-	case MOUSE_MOVED:
-		//Right button press
-
-		SHORT yPosition = mer.dwMousePosition.Y;
-		if (yPosition >= loc.y && yPosition <= loc.y + loc.height - 1) {
-			setHoverBackground(yPosition);
-		}
-		break;
-	}
-}
 
 RadioMaster::~RadioMaster()
 {

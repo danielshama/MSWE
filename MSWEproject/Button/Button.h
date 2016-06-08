@@ -5,6 +5,11 @@
 #include "../IController/IController.h"
 using namespace std;
 
+struct MouseListener
+{
+	virtual void MousePressed(IController &control, int x, int y, bool isLeft) = 0;
+};
+
 class Button : public IController
 {
 	string buttonStr;
@@ -15,7 +20,9 @@ public:
 	~Button();
 
 	void draw();
-	void handleInput(INPUT_RECORD) {};
+	bool handleInput(INPUT_RECORD);
 	void setText(string value);
+	void AddListener(MouseListener &listener);
+
 };
 

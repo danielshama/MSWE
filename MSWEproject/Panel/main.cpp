@@ -1,5 +1,6 @@
 #include "Panel.h"
 #include "../Label/Label.h"
+#include "../TextBox/TextBox.h"
 
 
 HANDLE hStdin;
@@ -12,12 +13,15 @@ int main(VOID)
 	DWORD cNumRead, fdwMode, i;
 	INPUT_RECORD irInBuf[128];
 
-	IController *panel = new Panel(20, 40);
+	Panel *panel = new Panel(40, 70);
 	panel->setLocation(10, 10);
-	IController *panel2 = new Panel(10, 12);
-	//IController *label = new Label(10);
-	//((Label*)label)->setText("Noam Star");
-	((Panel*)panel)->addControl(panel2, 1, 1);
+	Panel *panel2 = new Panel(10, 12);
+	Label *label = new Label(10);
+	TextBox *textBox = new TextBox(20);
+	label->setText("Noam Star");
+	//((Panel*)panel)->addControl(panel2, 1, 1);
+	panel->addControl(textBox, 5, 5);
+	panel->addControl(label, 15, 25);
 	panel->draw();
 
 	// Get the standard input handle. 

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Label", "Label\Label.vcxproj", "{83DBDE24-D4F8-4B4E-8FC5-B4A240383A84}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -39,6 +39,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Button", "Button\Project1.v
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Panel", "Panel\Panel.vcxproj", "{5E02C74B-D012-489F-9AD2-4A640D7D8227}"
 	ProjectSection(ProjectDependencies) = postProject
+		{CD33B21C-7290-48F1-8686-2DDEE9BD5EDE} = {CD33B21C-7290-48F1-8686-2DDEE9BD5EDE}
 		{83DBDE24-D4F8-4B4E-8FC5-B4A240383A84} = {83DBDE24-D4F8-4B4E-8FC5-B4A240383A84}
 		{A830D1A1-D82A-47B2-932C-894F603FE4A8} = {A830D1A1-D82A-47B2-932C-894F603FE4A8}
 	EndProjectSection

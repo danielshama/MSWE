@@ -28,6 +28,6 @@ public:
 	TextBox(short x, short y, int width);
 	~TextBox();
 	void draw();
-	void handleInput(INPUT_RECORD iRecord);
+	bool handleInput(INPUT_RECORD iRecord);
 };
 

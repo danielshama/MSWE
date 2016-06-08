@@ -47,7 +47,7 @@ public:
 	ComboBox(int x, int y, char* options[], int size);
 	~ComboBox();
 	//input handle
-	void handleInput(INPUT_RECORD iRecord);
+	bool handleInput(INPUT_RECORD iRecord);
 
 	//index selection
 	size_t GetSelectedIndex();

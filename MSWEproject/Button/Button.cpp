@@ -31,9 +31,10 @@ void Button::draw()
 	}
 	SetConsoleCursorPosition(handle, { loc.x + (short)(loc.width - buttonStr.length())/2, loc.y + 1 });
 	cout << buttonStr;
-
 }
 
 void Button::setText(string value) {
 	buttonStr = value;
 }
+
+bool Button::handleInput(INPUT_RECORD) { return true; }

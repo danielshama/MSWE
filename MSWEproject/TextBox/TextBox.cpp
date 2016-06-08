@@ -18,7 +18,7 @@ TextBox::TextBox(int width) :
 void TextBox::draw() {
 
 	int i;
-	SetConsoleCursorPosition(handle, c);
+	SetConsoleCursorPosition(handle, { loc.x, loc.y });
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	GetConsoleScreenBufferInfo(handle, &cbi);
 	DWORD wAttr = BACKGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
@@ -28,7 +28,7 @@ void TextBox::draw() {
 	}
 }
 
-void TextBox::handleInput(INPUT_RECORD iRecord) {
+bool TextBox::handleInput(INPUT_RECORD iRecord) {
 		
 	handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	changeCurserPosition(curserPosition);
@@ -45,6 +45,7 @@ void TextBox::handleInput(INPUT_RECORD iRecord) {
 	default:
 		break;
 	}
+	return true;
 }
 
 void TextBox::keyEventProc(KEY_EVENT_RECORD ker) {
@@ -101,11 +102,11 @@ void TextBox::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 
 void TextBox::checkClickedPosition(COORD dwMousePosition) {
 	CONSOLE_CURSOR_INFO cci;
-	if (dwMousePosition.Y == c.Y && ((dwMousePosition.X >= c.X) && (dwMousePosition.X < c.X + maxSize))) {
+	if (dwMousePosition.Y == loc.y && ((dwMousePosition.X >= loc.x) && (dwMousePosition.X < loc.x + maxSize))) {
 		isClicked = true;
 		cci = { 10, TRUE };
 		SetConsoleCursorInfo(handle, &cci);
-		curserPosition = dwMousePosition.X - c.X;
+		curserPosition = dwMousePosition.X - loc.x;
 		changeCurserPosition(curserPosition);
 	}
 	else {
@@ -158,7 +159,7 @@ void TextBox::addCharecter(char ch) {
 }
 
 void TextBox::changeCurserPosition(int position){
-	COORD newCoord = { (short) c.X + (short) position, c.Y };
+	COORD newCoord = { (short) loc.x + (short) position, loc.y };
 	SetConsoleCursorPosition(handle, newCoord);
 }
 

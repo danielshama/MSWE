@@ -36,7 +36,7 @@ void ComboBox::draw() {
 	boolean endFlag;
 
 	//initialize the top box 
-	SetConsoleCursorPosition(handle, c);
+	SetConsoleCursorPosition(handle, { loc.x, loc.y });
 
 	printChoosen();
 }
@@ -175,7 +175,7 @@ void ComboBox::checkKey(int listItem) {
 }
 
 //listening for any mouse click and handle if relevnt
-void ComboBox::handleInput(INPUT_RECORD iRecord) {
+bool ComboBox::handleInput(INPUT_RECORD iRecord) {
 	handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	switch (iRecord.EventType)
 	{
@@ -190,6 +190,7 @@ void ComboBox::handleInput(INPUT_RECORD iRecord) {
 	default:
 		break;
 	}
+	return true;
 }
 
 void ComboBox::keyEventProc(KEY_EVENT_RECORD ker) {

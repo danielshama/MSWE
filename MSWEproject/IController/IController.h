@@ -30,12 +30,14 @@ public:
 	virtual bool handleInput(INPUT_RECORD) = 0;
 	~IController() {};
 
-	void SetVisibility(bool visibility);
 	Location getLocation() { return loc; }
 	bool getIsFocusable() { return isFocusable; }
+
+	void SetVisibility(bool visibility);
 	void SetForeground(ForegroundColor color);
 	void SetBackground(BackgroundColor color);
 	void SetBorder(BorderType border);
+
 	boolean checkInLimits(MOUSE_EVENT_RECORD &mer) {
 		if (mer.dwMousePosition.X >= loc.x && mer.dwMousePosition.X <= loc.x + loc.width) 
 			if (mer.dwMousePosition.Y >= loc.y && mer.dwMousePosition.Y <= loc.y + loc.height - 1) return true;	

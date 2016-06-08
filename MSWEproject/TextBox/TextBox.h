@@ -9,10 +9,9 @@ private :
 
 	char* textBoxBuf;
 	int maxSize, curserPosition;
-	boolean isClicked;
-
-	void keyEventProc(KEY_EVENT_RECORD ker);
-	void MouseEventProc(MOUSE_EVENT_RECORD mer);
+	DWORD wAttr;
+	bool keyEventProc(KEY_EVENT_RECORD ker);
+	bool MouseEventProc(MOUSE_EVENT_RECORD mer);
 
 	void moveRight();
 	void moveLeft();

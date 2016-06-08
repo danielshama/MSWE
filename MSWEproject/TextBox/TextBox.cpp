@@ -12,7 +12,7 @@ TextBox::TextBox(int width) :
 		textBoxBuf[i] = ' ';
 	}
 	maxSize = width;
-	isClicked = true;
+	wAttr = BACKGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
 }
 
 void TextBox::draw() {
@@ -21,7 +21,6 @@ void TextBox::draw() {
 	SetConsoleCursorPosition(handle, { loc.x, loc.y });
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	GetConsoleScreenBufferInfo(handle, &cbi);
-	DWORD wAttr = BACKGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
 	SetConsoleTextAttribute(handle, wAttr);
 	for (i = 0; i < maxSize; i++) {
 		printf("%c", textBoxBuf[i]);
@@ -29,29 +28,31 @@ void TextBox::draw() {
 }
 
 bool TextBox::handleInput(INPUT_RECORD iRecord) {
-		
 	handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	changeCurserPosition(curserPosition);
+	bool res = true;
 	switch (iRecord.EventType)
 	{
 	case KEY_EVENT: // keyboard input 
-		keyEventProc(iRecord.Event.KeyEvent);
+		res = keyEventProc(iRecord.Event.KeyEvent);
 		break;
 
 	case MOUSE_EVENT: // mouse input 
-		MouseEventProc(iRecord.Event.MouseEvent);
+		res = MouseEventProc(iRecord.Event.MouseEvent);
 		break;
 
 	default:
 		break;
 	}
-	return true;
+	return res;
 }
 
-void TextBox::keyEventProc(KEY_EVENT_RECORD ker) {
+bool TextBox::keyEventProc(KEY_EVENT_RECORD ker) {
 
-	if (!isClicked) return;
+	bool res = true;
+	if (!isFocus) return false;
 	if (ker.bKeyDown) {
+		SetConsoleTextAttribute(handle, wAttr);
 		//RIGHT key pressed
 		if (ker.wVirtualKeyCode == VK_RIGHT) {
 			moveRight();
@@ -74,36 +75,41 @@ void TextBox::keyEventProc(KEY_EVENT_RECORD ker) {
 		}
 		//TAB key pressed
 		else if (ker.wVirtualKeyCode == VK_TAB) {
-			if (curserPosition < maxSize - 3) {
-				moveRight();
-				moveRight();
-				moveRight();
-			}
+			isFocus = false;
+			res = false;
+			CONSOLE_CURSOR_INFO cci;
+			cci = { 100, FALSE };
+			SetConsoleCursorInfo(handle, &cci);
 		}
 		//Write the charecter to the console 
 		else addCharecter(ker.uChar.AsciiChar);
 	}
+	return res;
 }
 
-void TextBox::MouseEventProc(MOUSE_EVENT_RECORD mer) {
+bool TextBox::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 	#ifndef MOUSE_HWHEELED
 	#define MOUSE_HWHEELED 0x0008
 	#endif
+	bool res = true;
 	switch (mer.dwEventFlags) {
-		
 		case 0:
 			//Right button press
 			if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED) {
 				checkClickedPosition(mer.dwMousePosition);
+				if (!isFocus) {
+					res = false;
+				}
 			}
 			break;
 	}
+	return res;
 }
 
 void TextBox::checkClickedPosition(COORD dwMousePosition) {
 	CONSOLE_CURSOR_INFO cci;
 	if (dwMousePosition.Y == loc.y && ((dwMousePosition.X >= loc.x) && (dwMousePosition.X < loc.x + maxSize))) {
-		isClicked = true;
+		isFocus = true;
 		cci = { 10, TRUE };
 		SetConsoleCursorInfo(handle, &cci);
 		curserPosition = dwMousePosition.X - loc.x;
@@ -112,7 +118,7 @@ void TextBox::checkClickedPosition(COORD dwMousePosition) {
 	else {
 		cci = { 100, FALSE };
 		SetConsoleCursorInfo(handle, &cci);
-		isClicked = false;
+		isFocus = false;
 	}
 }
 

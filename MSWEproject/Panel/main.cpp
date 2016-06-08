@@ -1,6 +1,10 @@
 #include "Panel.h"
 #include "../Label/Label.h"
 #include "../TextBox/TextBox.h"
+#include "../ComboBox/ComboBox.h"
+#include "../NumericBox/NumericBox.h"
+#include "../Button/Button.h"
+#include "../RadioBox/RadioMaster.h"
 
 
 HANDLE hStdin;
@@ -15,13 +19,29 @@ int main(VOID)
 
 	Panel *panel = new Panel(40, 70);
 	panel->setLocation(10, 10);
-	Panel *panel2 = new Panel(10, 12);
+
 	Label *label = new Label(10);
+	label->setText("text box:");
+
 	TextBox *textBox = new TextBox(20);
-	label->setText("Noam Star");
-	//((Panel*)panel)->addControl(panel2, 1, 1);
-	panel->addControl(textBox, 5, 5);
-	panel->addControl(label, 15, 25);
+	
+	vector<string> vec = { "item1", "item2", "item3", "item4" };
+	ComboBox *comboBox = new ComboBox(20, vec);
+
+	NumericBox *numericBox = new NumericBox(20, 10, 50);
+
+	vector<string> itemsOptions = vector<string>({ "This is the first option",
+		"This is the second option",
+		"This is the third option",
+		"This is the fourth option" });
+
+	RadioMaster *radioMaster = new RadioMaster(itemsOptions.size(), 20, itemsOptions);
+
+	panel->addControl(textBox, 15, 2);
+	panel->addControl(label, 15, 1);
+	panel->addControl(comboBox, 10, 5);
+	panel->addControl(numericBox, 36, 2);
+	panel->addControl(radioMaster, 40, 10);
 	panel->draw();
 
 	// Get the standard input handle. 

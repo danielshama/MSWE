@@ -6,7 +6,7 @@
 #include <vector>
 #include "../IController/IController.h"
 
-
+ 
 class Panel : public IController
 {
 private:
@@ -20,6 +20,10 @@ public:
 	bool handleInput(INPUT_RECORD ir);
 	bool checkAvailableLocation(short x, short y, int width, int height);
 	void draw();
+	void MouseEventProc(INPUT_RECORD ir);
+	bool keyEventProc(INPUT_RECORD ir);
+	void foucosOnNextController();
+	int getFocusIndex();
 	~Panel();
 };
 

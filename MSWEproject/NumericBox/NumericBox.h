@@ -23,11 +23,12 @@ public:
 
 	//events handlers
 	void MouseEventProc(MOUSE_EVENT_RECORD mer);
+	void keyEventProc(KEY_EVENT_RECORD ker);
 	void checkClickedPosition(COORD dwMousePosition);
 	void changeValue(int add);
 
 	//Inharite
 	void draw();
-	void handleInput(INPUT_RECORD iRecord);
+	bool handleInput(INPUT_RECORD iRecord);
 };
 

@@ -17,6 +17,10 @@ private:
 	bool isOpen;
 	int listItemOn;
 
+	int coloredLine;
+	int backgroundLine;
+	DWORD regularAttr;
+
 	//the initial style
 	void draw();
 	//combobox open/close

@@ -1,9 +1,6 @@
 #include "ComboBox.h"
 #define _CRT_SECURE_NO_WARNINGS 
 
-int coloredLine;
-int backgroundLine;
-DWORD regularAttr;
 
 ComboBox::ComboBox(int width, vector<string> entries) :
 	IController(width) {
@@ -177,56 +174,69 @@ void ComboBox::checkKey(int listItem) {
 //listening for any mouse click and handle if relevnt
 bool ComboBox::handleInput(INPUT_RECORD iRecord) {
 	handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	bool res = true;
 	switch (iRecord.EventType)
 	{
 	case MOUSE_EVENT: // mouse input 
 		MouseEventProc(iRecord.Event.MouseEvent);
+		if (!isFocus) res = false;
 		break;
 	
 	case KEY_EVENT: // keyboard input 
 		keyEventProc(iRecord.Event.KeyEvent);
+		if (!isFocus) res = false;
 		break;
 
 	default:
 		break;
 	}
-	return true;
+	return res;
 }
 
 void ComboBox::keyEventProc(KEY_EVENT_RECORD ker) {
-
-	if (!isOpen || !isFocus) return;
+	if (!isFocus) return;
 	if (ker.bKeyDown) {
-		//up key pressed
-		if (ker.wVirtualKeyCode == VK_UP) {
-			checkKey(--listItemOn);
-		}
-		//down key pressed
-		else if (ker.wVirtualKeyCode == VK_DOWN) {
-			checkKey(++listItemOn);
-		}
-		//UP numpad key pressed
-		else if (ker.wVirtualKeyCode == VK_NUMPAD8) {
-			checkKey(--listItemOn);
-		}
-		//Down numpad pressed
-		else if (ker.wVirtualKeyCode == VK_NUMPAD2) {
-			checkKey(++listItemOn);
-		}
-		//BACKSPACE key pressed
-		else if (ker.wVirtualKeyCode == VK_RETURN) {
-			int lastColoredLine = coloredLine;
-			coloredLine = listItemOn / 2 - 1;
-			if (lastColoredLine == -1) lastColoredLine = 0;
-			chooseOption(listItemOn * 2 + 2, lastColoredLine);
-			printOption(listItemOn * 2 + 2, listItemOn);
-			hideOptions();
-			isOpen = false;
+		if (isOpen) {
+			//up key pressed
+			if (ker.wVirtualKeyCode == VK_UP) {
+				checkKey(--listItemOn);
+			}
+			//down key pressed
+			else if (ker.wVirtualKeyCode == VK_DOWN) {
+				checkKey(++listItemOn);
+			}
+			//UP numpad key pressed
+			else if (ker.wVirtualKeyCode == VK_NUMPAD8) {
+				checkKey(--listItemOn);
+			}
+			//Down numpad pressed
+			else if (ker.wVirtualKeyCode == VK_NUMPAD2) {
+				checkKey(++listItemOn);
+			}
+			//BACKSPACE key pressed
+			else if (ker.wVirtualKeyCode == VK_RETURN) {
+				int lastColoredLine = coloredLine;
+				coloredLine = listItemOn / 2 - 1;
+				if (lastColoredLine == -1) lastColoredLine = 0;
+				chooseOption(listItemOn * 2 + 2, lastColoredLine);
+				printOption(listItemOn * 2 + 2, listItemOn);
+				hideOptions();
+				isOpen = false;
+			}
 		}
 		//TAB key pressed
-		else if (ker.wVirtualKeyCode == VK_TAB) {
-			if (listItemOn == list.size() - 1) isFocus = false;
-			else checkKey(++listItemOn);
+		if (ker.wVirtualKeyCode == VK_TAB) {
+			if (isOpen) {
+				if (listItemOn == list.size() - 1){
+					isFocus = false;
+					isOpen = false;
+					hideOptions();
+				}
+				else checkKey(++listItemOn);
+			}
+			else {
+				isFocus = false;
+			}
 		}
 	}
 }
@@ -235,6 +245,7 @@ void ComboBox::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 #ifndef MOUSE_HWHEELED
 #define MOUSE_HWHEELED 0x0008
 #endif
+
 	switch (mer.dwEventFlags) {
 
 	case 0:
@@ -297,6 +308,8 @@ void ComboBox::checkClickedPosition(COORD dwMousePosition) {
 	}
 	else {
 		isFocus = false;
+		isOpen = false;
+		hideOptions();
 	}
 }
 

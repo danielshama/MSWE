@@ -11,13 +11,42 @@ Panel::Panel(int height, int width) : IController(width)
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	GetConsoleScreenBufferInfo(handle, &cbi);
 	regularAttr = cbi.wAttributes;
+	foucosedIndex = -1;
 }
 
 bool Panel::handleInput(INPUT_RECORD ir) {
+	handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	switch (ir.EventType)
+	{
+	case MOUSE_EVENT: // mouse input
+		MouseEventProc(ir);
+		break;
 
-
-
+	case KEY_EVENT: // keyboard input 
+		if (!keyEventProc(ir)) {
+			foucosOnNextController();
+		}
+		break;
+	default:
+		break;
+	}
 	return true;
+}
+
+void Panel::MouseEventProc(INPUT_RECORD ir) {
+	for (int i = 0; i < controllers.size(); i++) {
+		controllers[i]->handleInput(ir);
+	}
+}
+
+
+bool Panel::keyEventProc(INPUT_RECORD ir) {
+	bool res = true;
+	if (foucosedIndex == -1) return false;
+	else {
+		res = controllers[getFocusIndex()]->handleInput(ir);
+	}
+	return res;
 }
 
 Panel::~Panel()
@@ -28,9 +57,12 @@ void Panel::addControl(IController *controller, short x, short y) {
 	controller->setLocation(loc.x + x, loc.y + y);
 	Location locTemp = controller->getLocation();
 	if (checkAvailableLocation(locTemp.x, locTemp.y, locTemp.width, locTemp.height)) {
-		if (controllers.size() == 0)
-			if (controller->getIsFocusable())
+		if (controllers.size() == 0) {
+			if (controller->getIsFocusable()) {
 				controller->isFocus = true;
+				foucosedIndex = 0;
+			}
+		}
 		controllers.push_back(controller);
 	}
 }
@@ -52,6 +84,10 @@ bool Panel::checkAvailableLocation(short x, short y, int width, int height) {
 		//now we need to check if there is any collision between the controllers in the panel
 		if ((controllerLoc.x + controllerLoc.width) < existLoc.x ||
 			(existLoc.x + existLoc.width) < controllerLoc.x) {
+			continue;
+		}
+		else if ((controllerLoc.y + controllerLoc.height) > actualLoc.y ||
+			(existLoc.y + existLoc.height) < controllerLoc.y) {
 			continue;
 		}
 		return false;
@@ -79,4 +115,27 @@ void Panel::draw() {
 	for (int i = 0; i < controllers.size(); i++) {
 		controllers[i]->draw();
 	}
+}
+
+void Panel::foucosOnNextController() {
+	while (1) {
+		foucosedIndex++;
+		if (controllers.size() == foucosedIndex) foucosedIndex = 0;
+		if (controllers[foucosedIndex]->isFocusable){
+			controllers[foucosedIndex]->isFocus = true;
+			break;
+		}
+	}
+	return;
+}
+
+int Panel::getFocusIndex() {
+	int res = 0;
+	for (int i=0; i < controllers.size(); i++) {
+		if (controllers[i]->isFocus) {
+			res = i;
+			break;
+		}
+	}
+	return res;
 }

@@ -15,7 +15,9 @@ public:
 	Label(int width);
 	~Label() {};
 	void draw();
-	bool handleInput(INPUT_RECORD) { return false; };
+	bool handleInput(INPUT_RECORD) { 
+		return false; 
+	};
 	void setText(string value);
 
 };

@@ -6,6 +6,7 @@ NumericBox::NumericBox(int width, int minimum, int maximum) : IController(width)
 	max = maximum;
 	min = minimum;
 	value = min;
+	isFocusable = false;
 	CONSOLE_CURSOR_INFO cci = { 100, FALSE };
 	SetConsoleCursorInfo(handle, &cci);
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
@@ -29,16 +30,26 @@ void NumericBox::draw()
 	cout << '+';
 }
 
-void NumericBox::handleInput(INPUT_RECORD iRecord) {
+bool NumericBox::handleInput(INPUT_RECORD iRecord) {
 	handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	bool res = true;
 	switch (iRecord.EventType)
 	{
-	case MOUSE_EVENT: // mouse input 
-		MouseEventProc(iRecord.Event.MouseEvent);
-		break;
-	default:
-		break;
+		case MOUSE_EVENT: // mouse input 
+			MouseEventProc(iRecord.Event.MouseEvent);
+			if (!isFocus) res = false;
+			break;
+
+			/*
+		case KEY_EVENT: // keyboard input 
+			keyEventProc(iRecord.Event.KeyEvent);
+			if (!isFocus) res = false;
+			break;
+		*/
+		default:
+			break;
 	}
+	return res;
 }
 
 void NumericBox::MouseEventProc(MOUSE_EVENT_RECORD mer) {
@@ -53,17 +64,29 @@ void NumericBox::MouseEventProc(MOUSE_EVENT_RECORD mer) {
 			checkClickedPosition(mer.dwMousePosition);
 		}
 		break;
+
 	}
 }
+
+/*
+void NumericBox::keyEventProc(KEY_EVENT_RECORD ker) {
+	if (ker.wVirtualKeyCode == VK_TAB) {
+		isFocus = false;
+	}
+}
+*/
 
 void NumericBox::checkClickedPosition(COORD dwMousePosition) {
 
 	if (dwMousePosition.X == loc.x && dwMousePosition.Y == loc.y) {
+		//isFocus = true;
 		changeValue(-1);
 	}
 	else if (dwMousePosition.X == loc.x + 5 && dwMousePosition.Y == loc.y) {
+		//isFocus = true;
 		changeValue(1);
 	}
+	//else isFocus = false;
 }
 
 void NumericBox::changeValue(int add) {

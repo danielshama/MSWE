@@ -30,6 +30,7 @@ int main(void) {
 	//radioMaster->draw();
 
 	IController *radioMaster = new RadioMaster(itemsOptions.size(), 20, itemsOptions);
+	radioMaster->setLocation(10, 10);
 	radioMaster->draw();
 
 

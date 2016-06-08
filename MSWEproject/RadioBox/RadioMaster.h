@@ -18,8 +18,8 @@ private:
 
 	CONSOLE_CURSOR_INFO noVisibleCursor;
 
-	DWORD noBackground;
-	DWORD backgroundOn;
+	DWORD noBackground = csbiInfo.wAttributes | BACKGROUND_BLUE;
+	DWORD backgroundOn = BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED;
 
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
 

@@ -5,17 +5,17 @@
 
 using namespace std;
 
-typedef struct{
+typedef struct boxLocation{
 	short x, y;
 	int width, height;
-} Location;
+} boxLocation;
 
 class RadioBox
 {
 private:
 
 	//COORD checkPoint;
-	Location loc;
+	boxLocation loc;
 	string option;
 
 	BOOL checked = FALSE;
@@ -24,13 +24,12 @@ private:
 	DWORD noBackground;
 	DWORD backgroundOn;
 
-	HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
-	HANDLE in = GetStdHandle(STD_INPUT_HANDLE);
+	HANDLE handle;
 
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
 
 public:
-	RadioBox(string option, DWORD &noBackground, DWORD &backgroundOn);
+	RadioBox(string option, DWORD &noBackground, DWORD &backgroundOn, HANDLE handle);
 
 	void makeRadioButton();
 	void setOnBackground();
@@ -40,7 +39,7 @@ public:
 	BOOL isChecked();
 	BOOL isHovered();
 	SHORT getYAxis();
-	void setLocation(short x, short y, int width, int height);
+	void setBoxLocation(short x, short y, int width, int height);
 	~RadioBox();
 };
 

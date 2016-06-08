@@ -22,11 +22,12 @@ void RadioMaster::draw() {
 	SetConsoleCursorPosition(handle, { loc.x, loc.y });
 
 	//firstY = csbiInfo.dwCursorPosition.Y;
-	noBackground = csbiInfo.wAttributes;
+	noBackground = csbiInfo.wAttributes | BACKGROUND_BLUE;
 	backgroundOn = BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED;
 
 	for (int i = 0; i < size; i++) {
 		addRadioBox(itemOptions[i], i);
+		SetConsoleCursorPosition(handle, { loc.x, loc.y + i+1 });
 	}
 	size = boxes.size();
 	GetConsoleScreenBufferInfo(handle, &csbiInfo);
@@ -41,13 +42,16 @@ bool RadioMaster::handleInput(INPUT_RECORD ir)
 	switch (ir.EventType)
 	{
 	case KEY_EVENT: // keyboard input 
-		return checkEventKey(ir);
+		checkEventKey(ir);
+		if (!isFocus) return false;
 		//break;
 
 	case MOUSE_EVENT: // mouse input 
 		mouseEventProc(ir.Event.MouseEvent);
+		if (!isFocus) return false;
 		break;
 	}
+	return true;
 }
 
 bool RadioMaster::checkEventKey(INPUT_RECORD &irInBuf) {
@@ -57,7 +61,7 @@ bool RadioMaster::checkEventKey(INPUT_RECORD &irInBuf) {
 			goUp();
 			return true;
 		}
-		if (key == VK_DOWN || key == VK_TAB || key == VK_NUMPAD2) {
+		if (key == VK_DOWN || key == VK_NUMPAD2) {
 			goDown();
 			return true;
 		}
@@ -66,7 +70,10 @@ bool RadioMaster::checkEventKey(INPUT_RECORD &irInBuf) {
 			return true;;
 		}
 		if (key == VK_TAB) {
-			if (lastInList) return false;
+			if (lastInList) {
+				isFocus = false;
+				return false;
+			}
 			goDown();
 			return true;
 		}
@@ -86,8 +93,12 @@ void RadioMaster::mouseEventProc(MOUSE_EVENT_RECORD &mer) {
 		if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED) {
 			SHORT yPosition = mer.dwMousePosition.Y;
 			if (yPosition >= loc.y && yPosition <= loc.y + loc.height - 1) {
+				isFocus = true;
 				setHoverBackground(yPosition);
 				markHovered();
+			}
+			else {
+				isFocus = false;
 			}
 			//checkClickedPosition(mer.dwMousePosition);
 		}
@@ -104,13 +115,13 @@ void RadioMaster::mouseEventProc(MOUSE_EVENT_RECORD &mer) {
 }
 
 void RadioMaster::addRadioBox(string option, int line) {
-	RadioBox *temp = new RadioBox(option, noBackground, backgroundOn);
+	RadioBox *temp = new RadioBox(option, noBackground, backgroundOn, handle);
 	if (temp == NULL) {
 		cout << "failed to create a RadioBox" << endl;
 		exit(1);
 	}
 	
-	temp->setLocation(loc.x, loc.y + line, loc.width, 1);
+	temp->setBoxLocation(loc.x, loc.y + line, loc.width, 1);
 	temp->makeRadioButton();
 	boxes.push_back(temp);
 }
@@ -128,6 +139,7 @@ void RadioMaster::markHovered() {
 }
 
 void RadioMaster::setHoverBackground(SHORT y) {
+	lastInList = false;
 	for (int i = 0; i < size; i++) {
 		RadioBox *temp = boxes.at(i);
 		SHORT radioY = temp->getYAxis();

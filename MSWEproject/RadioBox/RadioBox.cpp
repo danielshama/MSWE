@@ -1,9 +1,9 @@
 #include "RadioBox.h"
 
 
-RadioBox::RadioBox(string option, DWORD &noBackground, DWORD &backgroundOn) {
+RadioBox::RadioBox(string option, DWORD &noBackground, DWORD &backgroundOn, HANDLE handle) {
 	this->option = option;
-
+	this->handle = handle;
 	this->noBackground = noBackground;
 	this->backgroundOn = backgroundOn;
 
@@ -14,7 +14,8 @@ RadioBox::RadioBox(string option, DWORD &noBackground, DWORD &backgroundOn) {
 
 void RadioBox::makeRadioButton() {
 	string s = "[ ] - " + option;
-
+	DWORD backgroundOn = BACKGROUND_BLUE | BACKGROUND_RED;
+	SetConsoleTextAttribute(handle, backgroundOn);
 	for (int i = 0; i < s.length() && i < loc.width; i++) {
 		cout << s.at(i);
 	}
@@ -26,7 +27,7 @@ void RadioBox::makeRadioButton() {
 	//optionCoords.start = csbiInfo.dwCursorPosition;
 
 	//cout << option;
-	GetConsoleScreenBufferInfo(out, &csbiInfo);
+	GetConsoleScreenBufferInfo(handle, &csbiInfo);
 	//optionCoords.end = csbiInfo.dwCursorPosition;
 
 	cout << endl;
@@ -45,7 +46,7 @@ BOOL RadioBox::isHovered() {
 void RadioBox::setOnBackground() {
 	DWORD background;
 	for (int i = 0; i < loc.height; i++)
-		if (!FillConsoleOutputAttribute(out, backgroundOn, loc.width - 6, { loc.x + 6, loc.y + i }, &background)) {
+	if (!FillConsoleOutputAttribute(handle, backgroundOn, loc.width - 6, { loc.x + 6, loc.y + i }, &background)) {
 			cout << "failed to change the background" << endl;
 			exit(1);
 		}
@@ -55,7 +56,7 @@ void RadioBox::setOnBackground() {
 void RadioBox::setOffBackground() {
 	DWORD background;
 	for (int i = 0; i < loc.height; i++)
-	if (!FillConsoleOutputAttribute(out, noBackground, loc.width - 6, {loc.x + 6, loc.y + i}, &background)) {
+	if (!FillConsoleOutputAttribute(handle, noBackground, loc.width - 6, { loc.x + 6, loc.y + i }, &background)) {
 		cout << "failed to change the background" << endl;
 		exit(1);
 	}
@@ -63,20 +64,20 @@ void RadioBox::setOffBackground() {
 }
 
 void RadioBox::markAsChecked() {
-	SetConsoleCursorPosition(out, {loc.x + 1, loc.y});
+	SetConsoleCursorPosition(handle, { loc.x + 1, loc.y });
 	cout << "X";
 	setOnBackground();
 	checked = TRUE;
 }
 
 void RadioBox::markAsUnchecked() {
-	SetConsoleCursorPosition(out, {loc.x + 1, loc.y});
+	SetConsoleCursorPosition(handle, { loc.x + 1, loc.y });
 	cout << " ";
 	setOffBackground();
 	checked = FALSE;
 }
 
-void RadioBox::setLocation(short x, short y, int width, int height) {
+void RadioBox::setBoxLocation(short x, short y, int width, int height) {
 	loc.x = x;
 	loc.y = y;
 	loc.width = width;

@@ -9,7 +9,6 @@ private :
 
 	char* textBoxBuf;
 	int maxSize, curserPosition;
-	DWORD wAttr;
 	bool keyEventProc(KEY_EVENT_RECORD ker);
 	bool MouseEventProc(MOUSE_EVENT_RECORD mer);
 

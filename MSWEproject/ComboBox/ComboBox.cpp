@@ -14,9 +14,6 @@ ComboBox::ComboBox(int width, vector<string> entries) :
 	//cursor size
 	CONSOLE_CURSOR_INFO cci = { 100, FALSE };
 	SetConsoleCursorInfo(handle, &cci);
-	CONSOLE_SCREEN_BUFFER_INFO cbi;
-	GetConsoleScreenBufferInfo(handle, &cbi);
-	regularAttr = cbi.wAttributes;
 	list = entries;
 
 	//init parameters
@@ -24,6 +21,9 @@ ComboBox::ComboBox(int width, vector<string> entries) :
 	isOpen = false;
 }
 
+void ComboBox::setPanelBackground(BackgroundColor color) {
+	panelBackground = getBackgroundColor(color);
+}
 
 ComboBox::~ComboBox() {}
 
@@ -43,18 +43,16 @@ void ComboBox::printChoosen() {
 	SetConsoleCursorPosition(handle, newCoord);
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	GetConsoleScreenBufferInfo(handle, &cbi);
-	DWORD wAttr2 = cbi.wAttributes | BACKGROUND_BLUE;
-	SetConsoleTextAttribute(handle, wAttr2);
+	SetConsoleTextAttribute(handle, dword);
 	string stringToPrint = choosen + " ";
 	for (int i = 0; i < loc.width - choosen.length(); i++) {
 		stringToPrint += " ";
 	}
 	cout << stringToPrint;
-	wAttr2 = cbi.wAttributes | BACKGROUND_RED;
-	SetConsoleTextAttribute(handle, wAttr2);
+	DWORD d = BACKGROUND_INTENSITY;
+	SetConsoleTextAttribute(handle, d);
 	cout << "+";
 }
-
 
 //show the options - printing them in the correct position
 void ComboBox::showOptions() {
@@ -81,7 +79,7 @@ void ComboBox::chooseOption(int position, int lastColoredLine) {
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	GetConsoleScreenBufferInfo(handle, &cbi);
 	DWORD wAttr2 = cbi.wAttributes | BACKGROUND_BLUE;
-	SetConsoleTextAttribute(handle, wAttr2);
+	SetConsoleTextAttribute(handle, dword);
 	choosen = list[listNum];
 	printChoosen(); 
 	SetSelectedIndex(lastColoredLine);
@@ -95,8 +93,8 @@ void ComboBox::printDelimiter(int position) {
 
 	SetConsoleCursorPosition(handle, newCoord);
 	GetConsoleScreenBufferInfo(handle, &cbi);
-	SetConsoleTextAttribute(handle, regularAttr);
-	for (i = 0; i < loc.width; i++) {
+	SetConsoleTextAttribute(handle, dword);
+	for (i = 0; i < loc.width + 1; i++) {
 		printf("-");
 	}
 }
@@ -109,9 +107,10 @@ void ComboBox::printOption(int position, int itemNum) {
 
 	SetConsoleCursorPosition(handle, newCoord);
 	GetConsoleScreenBufferInfo(handle, &cbi);
-	SetConsoleTextAttribute(handle, regularAttr);
+	SetConsoleTextAttribute(handle, dword);
 	string item = list[itemNum];
-	for (i = 0; i < loc.width - item.length(); i++) {
+	int itemLength = item.length();
+	for (i = 0; i < loc.width - itemLength + 1; i++) {
 		item += " ";
 	}
 	cout << item;
@@ -123,7 +122,6 @@ void ComboBox::printOptionHoverd(int position, int lastBackgroundLine) {
 	COORD newCoord = { loc.x, loc.y + (short)position };
 	COORD lastCoord = { loc.x, loc.y + (short)lastPos };
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
-	DWORD wAttr = BACKGROUND_INTENSITY;
 
 	SetConsoleCursorPosition(handle, newCoord);
 	GetConsoleScreenBufferInfo(handle, &cbi);
@@ -131,19 +129,20 @@ void ComboBox::printOptionHoverd(int position, int lastBackgroundLine) {
 		return;
 	}
 	else {
-		SetConsoleTextAttribute(handle, wAttr);
+		DWORD d = BACKGROUND_INTENSITY;
+		SetConsoleTextAttribute(handle, d);
 		//set hover on the new position
 		string item = list[backgroundLine];
-		for (i = 0; i < loc.width - item.length(); i++) {
+		for (i = 0; i < loc.width - item.length() + 1; i++) {
 			item += " ";
 		}
 		cout << item;
 		//if (lastPos == 0) return;
 		SetConsoleCursorPosition(handle, lastCoord);
-		SetConsoleTextAttribute(handle, regularAttr);
+		SetConsoleTextAttribute(handle, dword);
 		//set non hover on the last position
 		item = list[lastBackgroundLine];
-		for (i = 0; i < loc.width - item.length(); i++) {
+		for (i = 0; i < loc.width - item.length() + 1; i++) {
 			item += " ";
 		}
 		cout << item;
@@ -159,8 +158,8 @@ void ComboBox::printSpace(int position) {
 
 	SetConsoleCursorPosition(handle, newCoord);
 	GetConsoleScreenBufferInfo(handle, &cbi);
-	SetConsoleTextAttribute(handle, regularAttr);
-	for (i = 0; i < loc.width; i++) {
+	SetConsoleTextAttribute(handle, panelBackground);
+	for (i = 0; i < loc.width + 1; i++) {
 		printf(" ");
 	}
 }
@@ -168,7 +167,7 @@ void ComboBox::printSpace(int position) {
 void ComboBox::checkKey(int listItem) {
 	if (listItem < 0) listItem = list.size()-1;
 	if (listItem == list.size()) listItem = 0;
-	setHover({ loc.x+2, loc.y + listItem * 2 + 2 });
+	setHover({ (short)(loc.x+2), (short)(loc.y + listItem * 2 + 2) });
 }
 
 //listening for any mouse click and handle if relevnt

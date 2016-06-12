@@ -19,8 +19,7 @@ void Button::draw()
 	//change curser position
 	SetConsoleCursorPosition(handle, { loc.x, loc.y });
 	//foreground color
-	DWORD wAttr = FOREGROUND_GREEN | BACKGROUND_INTENSITY;
-	SetConsoleTextAttribute(handle, wAttr);
+	SetConsoleTextAttribute(handle, dword);
 	
 	//print the Button
 	string buttonFrame;

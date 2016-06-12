@@ -16,10 +16,9 @@ private:
 	int listSize, width;
 	bool isOpen;
 	int listItemOn;
-
+	DWORD panelBackground;
 	int coloredLine;
 	int backgroundLine;
-	DWORD regularAttr;
 
 	//the initial style
 	void draw();
@@ -43,12 +42,10 @@ private:
 	void printOption(int position, int itemNum);
 	void printChoosen();
 	void printOptionHoverd(int position, int lastBackgroundLine);
-
 public:
 
 	//ctor / dtor
 	ComboBox(int width, vector<string> entries);
-	ComboBox(int x, int y, char* options[], int size);
 	~ComboBox();
 	//input handle
 	bool handleInput(INPUT_RECORD iRecord);
@@ -57,5 +54,6 @@ public:
 	size_t GetSelectedIndex();
 	void SetSelectedIndex(size_t listNum);
 
+	void setPanelBackground(BackgroundColor color);
 
 };

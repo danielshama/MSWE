@@ -9,7 +9,6 @@ class NumericBox : public IController
 	int value;
 	int max;
 	int min;
-	DWORD regularAttr;
 
 public:
 	NumericBox(int width, int min, int max);

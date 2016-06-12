@@ -12,8 +12,7 @@ void Label::draw() {
 	//change curser position
 	SetConsoleCursorPosition(handle, { loc.x, loc.y });
 	//foreground color
-	DWORD wAttr = FOREGROUND_GREEN | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
-	SetConsoleTextAttribute(handle, wAttr);
+	SetConsoleTextAttribute(handle, dword);
 	//cursor size
 	CONSOLE_CURSOR_INFO cci = { 100, FALSE };
 	SetConsoleCursorInfo(handle, &cci);

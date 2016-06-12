@@ -15,13 +15,13 @@ private:
 	vector <RadioBox *> boxes;
 	vector<string> itemOptions;
 	bool lastInList = false;
-
+	DWORD hoverBackground = BACKGROUND_INTENSITY;
 	CONSOLE_CURSOR_INFO noVisibleCursor;
 
-	DWORD noBackground = csbiInfo.wAttributes | BACKGROUND_BLUE;
-	DWORD backgroundOn = BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED;
+//	DWORD noBackground = csbiInfo.wAttributes | BACKGROUND_BLUE;
+//	DWORD backgroundOn = BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED;
 
-	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
+//	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
 
 
 public:

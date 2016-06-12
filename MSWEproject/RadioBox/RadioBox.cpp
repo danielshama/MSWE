@@ -14,8 +14,8 @@ RadioBox::RadioBox(string option, DWORD &noBackground, DWORD &backgroundOn, HAND
 
 void RadioBox::makeRadioButton() {
 	string s = "[ ] - " + option;
-	DWORD backgroundOn = BACKGROUND_BLUE | BACKGROUND_RED;
-	SetConsoleTextAttribute(handle, backgroundOn);
+	
+	SetConsoleTextAttribute(handle, noBackground);
 	for (int i = 0; i < s.length() && i < loc.width; i++) {
 		cout << s.at(i);
 	}
@@ -46,7 +46,7 @@ BOOL RadioBox::isHovered() {
 void RadioBox::setOnBackground() {
 	DWORD background;
 	for (int i = 0; i < loc.height; i++)
-	if (!FillConsoleOutputAttribute(handle, backgroundOn, loc.width - 6, { loc.x + 6, loc.y + i }, &background)) {
+	if (!FillConsoleOutputAttribute(handle, backgroundOn, loc.width, { loc.x, loc.y }, &background)) {
 			cout << "failed to change the background" << endl;
 			exit(1);
 		}
@@ -56,7 +56,7 @@ void RadioBox::setOnBackground() {
 void RadioBox::setOffBackground() {
 	DWORD background;
 	for (int i = 0; i < loc.height; i++)
-	if (!FillConsoleOutputAttribute(handle, noBackground, loc.width - 6, { loc.x + 6, loc.y + i }, &background)) {
+	if (!FillConsoleOutputAttribute(handle, noBackground, loc.width, {loc.x, loc.y}, &background)) {
 		cout << "failed to change the background" << endl;
 		exit(1);
 	}

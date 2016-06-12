@@ -1,16 +1,10 @@
 #include "Panel.h"
 
-
-DWORD regularAttr;
-
 Panel::Panel(int height, int width) : IController(width)
 {
 	loc.height = height;
 	CONSOLE_CURSOR_INFO cci = { 100, FALSE };
 	SetConsoleCursorInfo(handle, &cci);
-	CONSOLE_SCREEN_BUFFER_INFO cbi;
-	GetConsoleScreenBufferInfo(handle, &cbi);
-	regularAttr = cbi.wAttributes;
 	foucosedIndex = -1;
 }
 
@@ -19,7 +13,7 @@ bool Panel::handleInput(INPUT_RECORD ir) {
 	switch (ir.EventType)
 	{
 	case MOUSE_EVENT: // mouse input
-		MouseEventProc(ir);
+		if(!MouseEventProc(ir)) return false;
 		break;
 
 	case KEY_EVENT: // keyboard input 
@@ -33,10 +27,11 @@ bool Panel::handleInput(INPUT_RECORD ir) {
 	return true;
 }
 
-void Panel::MouseEventProc(INPUT_RECORD ir) {
-	for (int i = 0; i < controllers.size(); i++) {
-		controllers[i]->handleInput(ir);
-	}
+bool Panel::MouseEventProc(INPUT_RECORD ir) {
+	MOUSE_EVENT_RECORD mer = ir.Event.MouseEvent;
+	if (!checkClickInPanel(mer)) return false;
+	for (int i = 0; i < controllers.size(); i++) controllers[i]->handleInput(ir);
+	return true;
 }
 
 
@@ -53,14 +48,26 @@ Panel::~Panel()
 {
 }
 
+bool Panel::checkClickInPanel(MOUSE_EVENT_RECORD mer) {
+	if (mer.dwMousePosition.Y > loc.y - 1 && mer.dwMousePosition.Y < loc.y + loc.height + 1 
+		&& mer.dwMousePosition.X > loc.x - 1 && mer.dwMousePosition.X < loc.x + loc.width + 1) {
+		isFocus = true;
+	}
+	else {
+		isFocus = false;
+	}
+	return isFocus;
+}
+
 void Panel::addControl(IController *controller, short x, short y) {
 	controller->setLocation(loc.x + x, loc.y + y);
 	Location locTemp = controller->getLocation();
 	if (checkAvailableLocation(locTemp.x, locTemp.y, locTemp.width, locTemp.height)) {
-		if (controllers.size() == 0) {
+		if (!controlFocused){
 			if (controller->getIsFocusable()) {
 				controller->isFocus = true;
-				foucosedIndex = 0;
+				controlFocused = true;
+				foucosedIndex = controllers.size();
 			}
 		}
 		controllers.push_back(controller);
@@ -107,26 +114,33 @@ void Panel::draw() {
 		cout << " ";
 		SetConsoleCursorPosition(handle, { loc.x + (short)loc.width, loc.y + i });
 		cout << " ";
+		SetConsoleTextAttribute(handle, dword);
+		for (short j = 1; j < loc.width; j++) {
+			SetConsoleCursorPosition(handle, { loc.x + j, short(loc.y + i)});
+			cout << " ";
+		}
+		SetConsoleTextAttribute(handle, wAttr);
 	}
+
 	SetConsoleCursorPosition(handle, { loc.x, loc.y + (short)loc.height });
 	cout << frameLength;
 	SetConsoleCursorPosition(handle, { loc.x, loc.y });
-	SetConsoleTextAttribute(handle, regularAttr);
+	SetConsoleTextAttribute(handle, defaulteDword);
 	for (int i = 0; i < controllers.size(); i++) {
 		controllers[i]->draw();
 	}
 }
 
 void Panel::foucosOnNextController() {
+	int index = foucosedIndex;
 	while (1) {
-		foucosedIndex++;
-		if (controllers.size() == foucosedIndex) foucosedIndex = 0;
-		if (controllers[foucosedIndex]->isFocusable){
-			controllers[foucosedIndex]->isFocus = true;
+		index++;
+		if (controllers.size() == index) index = 0;
+		if (controllers[index]->isFocusable){
+			controllers[index]->isFocus = true;
 			break;
 		}
 	}
-	return;
 }
 
 int Panel::getFocusIndex() {
@@ -134,6 +148,7 @@ int Panel::getFocusIndex() {
 	for (int i=0; i < controllers.size(); i++) {
 		if (controllers[i]->isFocus) {
 			res = i;
+			foucosedIndex = i;
 			break;
 		}
 	}

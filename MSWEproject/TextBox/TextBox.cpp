@@ -12,7 +12,7 @@ TextBox::TextBox(int width) :
 		textBoxBuf[i] = ' ';
 	}
 	maxSize = width;
-	wAttr = BACKGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+	//wAttr = BACKGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
 }
 
 void TextBox::draw() {
@@ -21,10 +21,11 @@ void TextBox::draw() {
 	SetConsoleCursorPosition(handle, { loc.x, loc.y });
 	CONSOLE_SCREEN_BUFFER_INFO cbi;
 	GetConsoleScreenBufferInfo(handle, &cbi);
-	SetConsoleTextAttribute(handle, wAttr);
+	SetConsoleTextAttribute(handle, dword);
 	for (i = 0; i < maxSize; i++) {
 		printf("%c", textBoxBuf[i]);
 	}
+	SetConsoleTextAttribute(handle, defaulteDword);
 }
 
 bool TextBox::handleInput(INPUT_RECORD iRecord) {
@@ -52,7 +53,7 @@ bool TextBox::keyEventProc(KEY_EVENT_RECORD ker) {
 	bool res = true;
 	if (!isFocus) return false;
 	if (ker.bKeyDown) {
-		SetConsoleTextAttribute(handle, wAttr);
+		SetConsoleTextAttribute(handle, dword);
 		//RIGHT key pressed
 		if (ker.wVirtualKeyCode == VK_RIGHT) {
 			moveRight();
@@ -84,6 +85,7 @@ bool TextBox::keyEventProc(KEY_EVENT_RECORD ker) {
 		//Write the charecter to the console 
 		else addCharecter(ker.uChar.AsciiChar);
 	}
+	SetConsoleTextAttribute(handle, defaulteDword);
 	return res;
 }
 

@@ -4,12 +4,6 @@
 RadioMaster::RadioMaster(int height, int width, vector<string> options) : 
 	IController(width){
 
-	/*
-	size = (int) options.size();
-	if (size < 2) {
-		cout << "not enough options" << endl;
-		exit(1);
-	}*/
 	loc.width = width;
 	loc.height = height;
 	//cout << endl;//going row down, just in case...
@@ -18,19 +12,19 @@ RadioMaster::RadioMaster(int height, int width, vector<string> options) :
 }
 
 void RadioMaster::draw() {
-	GetConsoleScreenBufferInfo(handle, &csbiInfo);
+	//GetConsoleScreenBufferInfo(handle, &csbiInfo);
 	SetConsoleCursorPosition(handle, { loc.x, loc.y });
 
 	//firstY = csbiInfo.dwCursorPosition.Y;
-	noBackground = csbiInfo.wAttributes | BACKGROUND_BLUE;
-	backgroundOn = BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED;
+	//noBackground = csbiInfo.wAttributes | BACKGROUND_BLUE;
+	//backgroundOn = BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED;
 
 	for (int i = 0; i < size; i++) {
 		addRadioBox(itemOptions[i], i);
-		SetConsoleCursorPosition(handle, { loc.x, loc.y + i+1 });
+		SetConsoleCursorPosition(handle, { loc.x, (short)(loc.y + i+1) });
 	}
 	size = boxes.size();
-	GetConsoleScreenBufferInfo(handle, &csbiInfo);
+	//GetConsoleScreenBufferInfo(handle, &csbiInfo);
 	//lastY = csbiInfo.dwCursorPosition.Y - 1;
 
 	noVisibleCursor = { 100, FALSE };
@@ -115,7 +109,7 @@ void RadioMaster::mouseEventProc(MOUSE_EVENT_RECORD &mer) {
 }
 
 void RadioMaster::addRadioBox(string option, int line) {
-	RadioBox *temp = new RadioBox(option, noBackground, backgroundOn, handle);
+	RadioBox *temp = new RadioBox(option, dword, hoverBackground, handle);
 	if (temp == NULL) {
 		cout << "failed to create a RadioBox" << endl;
 		exit(1);

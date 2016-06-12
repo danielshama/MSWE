@@ -9,9 +9,6 @@ NumericBox::NumericBox(int width, int minimum, int maximum) : IController(width)
 	isFocusable = false;
 	CONSOLE_CURSOR_INFO cci = { 100, FALSE };
 	SetConsoleCursorInfo(handle, &cci);
-	CONSOLE_SCREEN_BUFFER_INFO cbi;
-	GetConsoleScreenBufferInfo(handle, &cbi);
-	regularAttr = cbi.wAttributes;
 }
 
 
@@ -21,12 +18,10 @@ NumericBox::~NumericBox(){}
 void NumericBox::draw() 
 {
 	SetConsoleCursorPosition(handle, { loc.x, loc.y });
-	DWORD white = BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED;
-	SetConsoleTextAttribute(handle, white);
+	SetConsoleTextAttribute(handle, dword);
 	cout << '-';
-	SetConsoleTextAttribute(handle, regularAttr);
 	cout << " " << value << " ";
-	SetConsoleTextAttribute(handle, white);
+	SetConsoleTextAttribute(handle, dword);
 	cout << '+';
 }
 

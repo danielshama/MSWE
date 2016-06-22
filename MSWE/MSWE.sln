@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2013 for Windows Desktop
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MSWE", "MSWE\MSWE.vcxproj", "{FACF2B44-12A9-4ABD-9689-AE3C7F392BE9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Control", "Control\Control.vcxproj", "{90FA7ED8-DFA5-4E0F-B722-384A2294033D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FACF2B44-12A9-4ABD-9689-AE3C7F392BE9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FACF2B44-12A9-4ABD-9689-AE3C7F392BE9}.Debug|Win32.Build.0 = Debug|Win32
+		{FACF2B44-12A9-4ABD-9689-AE3C7F392BE9}.Release|Win32.ActiveCfg = Release|Win32
+		{FACF2B44-12A9-4ABD-9689-AE3C7F392BE9}.Release|Win32.Build.0 = Release|Win32
+		{90FA7ED8-DFA5-4E0F-B722-384A2294033D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{90FA7ED8-DFA5-4E0F-B722-384A2294033D}.Debug|Win32.Build.0 = Debug|Win32
+		{90FA7ED8-DFA5-4E0F-B722-384A2294033D}.Release|Win32.ActiveCfg = Release|Win32
+		{90FA7ED8-DFA5-4E0F-B722-384A2294033D}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
